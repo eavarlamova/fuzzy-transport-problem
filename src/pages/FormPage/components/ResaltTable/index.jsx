@@ -1,10 +1,11 @@
-import { Table, TableHead, TableCell, TableBody, TableRow } from "@material-ui/core";
+import { Table, TableHead, TableCell, TableBody, TableRow, Input } from "@material-ui/core";
 import { memo } from "react";
 import "../../index.scss"
 const ResultTable = (props) => {
   const {
     points,
     matrix,
+    handleChangePrice,
   } = props;
 
   return (
@@ -20,12 +21,19 @@ const ResultTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {console.log('#######', matrix, '#######')}
-          {matrix.map((item, index) => {
+          {console.log('matrix', matrix)}
+          {matrix.map((item, indexRow) => {
             return (
               <TableRow>
-                <TableCell className='table_name'> {points.departure[index].name}</TableCell>
-                {item.map(item => <TableCell> {item.x}</TableCell> )}
+                <TableCell className='table_name'> {points.departure[indexRow].name}</TableCell>
+                {item.map((item, indexCol) => (
+                  <TableCell>
+                    <Input 
+                      value={item.c || ''}
+                      onChange={({target: {value}})=>{console.log('111', 111);handleChangePrice(indexRow,indexCol,value)}}
+                    />
+                  </TableCell>
+                ))}
                 {/* <TableCell> </TableCell> */}
               </TableRow>
             )
