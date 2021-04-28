@@ -11,14 +11,14 @@ const ResultTable = (props) => {
 
       <Table>
         <TableHead>
-        <TableCell>ПО/ПН</TableCell>
-          {points.departure.map(({ name, quality }) => (
+          <TableCell>ПО/ПН</TableCell>
+          {points.destination.map(({ name, quality }) => (
             <TableCell> {name} - {quality} </TableCell>
           )) || ''}
         </TableHead>
         <TableBody></TableBody>
       </Table>
-{/* 
+      {/* 
       {
         points.destination.map(({ name, quality }) => (
           <li> {name} - {quality} </li>

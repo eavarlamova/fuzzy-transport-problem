@@ -15,9 +15,9 @@ const AddingForm = (props) => {
     handleChange(newValue, name, 'quality')
   };
 
-  useEffect(() => {
-    console.log(currentPoint)
-  }, [currentPoint])
+  // useEffect(() => {
+  //   // console.log(currentPoint)
+  // }, [currentPoint])
 
   return (
     <Card className="form__add-departure">

@@ -1,5 +1,5 @@
 import { Button, Card, Grid, Input, Typography } from '@material-ui/core';
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useMemo } from 'react';
 import AddingForm from "./components/AddingForm";
 import ResaltTable from "./components/ResaltTable";
 
@@ -8,6 +8,44 @@ import './index.scss';
 const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
+  const matrix = [
+    // [{x: 11 , c: 11}, {x: 12, c: 12}],
+    // [{x: 21, c: 21}, {x: 22, c: 22}],
+    // [{x: 31, c: 31}, {x: 50, c: null}],
+  ];
+
+  const setMatrixField = useMemo(() => {
+    const { departure, destination } = points;
+    const lengthDestination = destination.length; // кол-во ПН
+
+    const newArr = departure.reduce((acc, item, index) => {
+      let arr = [];
+      for (let i = 0; i < lengthDestination; i++) {
+        arr = [...arr, {
+          x: matrix[index]
+            ?
+            matrix[index][i]
+              ?
+              matrix[index][i].x || null
+              : null
+            : null,
+          c: matrix[index]
+            ?
+            matrix[index][i]
+              ?
+              matrix[index][i].c || null
+              : null
+            : null,
+        }]
+      }
+      return [...acc, arr]
+    }, [])
+    console.log('newArr', newArr)
+    // destination.reduce((acc, item, index) => {
+    //  
+    //   return [...acc, [1]]
+    // }, [])
+  }, [points])
 
   const handleChange = (value, name, typeOfKey) => {
     setCurrentPoint({
