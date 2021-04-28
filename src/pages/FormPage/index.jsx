@@ -1,4 +1,4 @@
-import { Button, Card, Grid, Input, Typography } from '@material-ui/core';
+import { Button, Card, Grid, Input, Typography, FormControlLabel, Switch } from '@material-ui/core';
 import React, { memo, useState, useMemo, useCallback, useEffect } from 'react';
 import AddingForm from "./components/AddingForm";
 import ResaltTable from "./components/ResaltTable";
@@ -10,6 +10,7 @@ const FormPage = () => {
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
   const [matrix, setMatrix] = useState([])
   const [basePlan, setBasePlan] = useState([]);
+  const [fuzzyDataControl, setFuzzyDataControl] = useState(false)
   // const matrix1 = [
   //   [{ x: 11, c: 11 }, { x: 12, c: 12 }],
   //   [{ x: 21, c: 21 }, { x: 22, c: 22 }],
@@ -142,7 +143,6 @@ const FormPage = () => {
     const totalCosts = newBasePlan.reduce((acc, item) => {
       return item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
     }, 0)
-    console.log('totalCosts', totalCosts)
     setBasePlan(newBasePlan);
   };
 
@@ -158,11 +158,13 @@ const FormPage = () => {
       ))
 
     }
-    // delete matrix
+
     setMatrix(newMatrix)
     setPoints(newPoints);
   };
-
+  const setFuzzyInput = () => { 
+    setFuzzyDataControl(!fuzzyDataControl)
+  }
 
   return (
     <div className="form">
@@ -185,6 +187,13 @@ const FormPage = () => {
           addNewPoint={addNewPoint}
           currentPoint={currentPoint.destination}
         />
+        <Grid item xs={12}>
+
+          <FormControlLabel
+            control={<Switch checked={fuzzyDataControl} onChange={setFuzzyInput} />}
+            label="нечеткие данные"
+          />
+        </Grid>
         <Grid item xs={12} >
           <ResaltTable
             points={points}
@@ -192,6 +201,7 @@ const FormPage = () => {
             handleChangePrice={handleChangePrice}
             name='стоимость'
             deletePoint={deletePoint}
+            fuzzyDataControl={fuzzyDataControl}
           />
           {fullnestMatrix ?
             <Button

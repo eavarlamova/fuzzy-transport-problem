@@ -9,6 +9,7 @@ const ResultTable = (props) => {
     handleChangePrice,
     name,
     deletePoint,
+    fuzzyDataControl,
   } = props;
 
   return (
@@ -68,11 +69,27 @@ const ResultTable = (props) => {
                             из ${points.departure[indexRow].name} 
                             в ${points.destination[indexCol].name}`}
                           >
-                            <Input
-                              value={typeof (item.c) === 'number' ? item.c : ''}
-                              onChange={({ target: { value } }) => { handleChangePrice(indexRow, indexCol, value) }}
-                              placeholder={`введите ${name} перевозки 1единицы`}
-                            />
+                            {
+                              fuzzyDataControl ?
+                                <>
+                                  <Input 
+                                  placeholder='введите min значение'
+                                  />
+                                  <Input 
+                                  placeholder='введите среднее значение'
+                                  />
+                                  <Input 
+                                  placeholder='введите max значение'
+                                  />
+                                </>
+                                :
+                                <Input
+                                  value={typeof (item.c) === 'number' ? item.c : ''}
+                                  onChange={({ target: { value } }) => { handleChangePrice(indexRow, indexCol, value) }}
+                                  placeholder={`введите ${name} перевозки 1единицы`}
+                                />
+                            }
+
                           </Tooltip>
                           :
                           item.x
