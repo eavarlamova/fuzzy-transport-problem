@@ -9,18 +9,18 @@ const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
   const [matrix, setMatrix] = useState([])
-  const matrix1 = [
-    [{ x: 11, c: 11 }, { x: 12, c: 12 }],
-    [{ x: 21, c: 21 }, { x: 22, c: 22 }],
-    [{ x: 31, c: 31 }, { x: 50, c: null }],
-  ];
-  useEffect(() => {
-    setMatrix(matrix1)
-    setPoints({
-      departure: [{ name: 'ПО 1' }, { name: 'ПО 2' }, { name: 'ПО 3' }],
-      destination: [{ name: 'ПH 1' }, { name: 'ПH 2' }, { name: 'ПH 3' }]
-    })
-  }, [])
+  // const matrix1 = [
+  //   [{ x: 11, c: 11 }, { x: 12, c: 12 }],
+  //   [{ x: 21, c: 21 }, { x: 22, c: 22 }],
+  //   [{ x: 31, c: 31 }, { x: 50, c: null }],
+  // ];
+  // useEffect(() => {
+  //   setMatrix(matrix1)
+  //   setPoints({
+  //     departure: [{ name: 'ПО 1' }, { name: 'ПО 2' }, { name: 'ПО 3' }],
+  //     destination: [{ name: 'ПH 1' }, { name: 'ПH 2' }, { name: 'ПH 3' }]
+  //   })
+  // }, [])
 
 
   const setMatrixField = useMemo(() => {
@@ -35,14 +35,14 @@ const FormPage = () => {
             ?
             matrix[index][i]
               ?
-              matrix[index][i].x || null
+              typeof(matrix[index][i].x) === 'number' ? matrix[index][i].x : null
               : null
             : null,
           c: matrix[index]
             ?
             matrix[index][i]
               ?
-              matrix[index][i].c || null
+              typeof(matrix[index][i].c) === 'number' ? matrix[index][i].c : null
               : null
             : null,
         }]
