@@ -1,6 +1,6 @@
 import { Table, TableHead, TableCell, TableBody, TableRow } from "@material-ui/core";
 import { memo } from "react";
-
+import "../../index.scss"
 const ResultTable = (props) => {
   const {
     points,
@@ -10,21 +10,21 @@ const ResultTable = (props) => {
   return (
     <>
 
-      <Table>
-        {/* <TableHead> */}
+      <Table className='table'>
+        <TableHead>
           <TableRow>
-            <TableCell>ПО/ПН</TableCell>
+            <TableCell>ПО\ПН</TableCell>
             {points.destination.map(({ name, quality }) => (
-              <TableCell> {name} - {quality} </TableCell>
+              <TableCell className='table_name'> {name} </TableCell>
             )) || ''}
           </TableRow>
-        {/* </TableHead>
-        <TableBody> */}
+        </TableHead>
+        <TableBody>
           {console.log('#######', matrix, '#######')}
           {matrix.map((item, index) => {
             return (
               <TableRow>
-                <TableCell> {points.departure[index].name}</TableCell>
+                <TableCell className='table_name'> {points.departure[index].name}</TableCell>
                 {item.map(item => <TableCell> {item.x}</TableCell> )}
                 {/* <TableCell> </TableCell> */}
               </TableRow>
@@ -35,7 +35,7 @@ const ResultTable = (props) => {
 
             </TableCell>
           </TableRow> */}
-        {/* </TableBody> */}
+        </TableBody>
       </Table>
       {/*       
       {
