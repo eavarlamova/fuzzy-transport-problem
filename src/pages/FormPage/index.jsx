@@ -2,7 +2,7 @@ import { Button, Card, Grid, Input, Typography } from '@material-ui/core';
 import React, { memo, useState, useMemo, useCallback, useEffect } from 'react';
 import AddingForm from "./components/AddingForm";
 import ResaltTable from "./components/ResaltTable";
-
+import { setDataToLS, getDataFromLS } from '../../helpers/localStorage';
 import './index.scss';
 
 const FormPage = () => {
@@ -35,31 +35,44 @@ const FormPage = () => {
             ?
             matrix[index][i]
               ?
-              typeof(matrix[index][i].x) === 'number' ? matrix[index][i].x : null
+              typeof (matrix[index][i].x) === 'number' ? matrix[index][i].x : null
               : null
             : null,
           c: matrix[index]
             ?
             matrix[index][i]
               ?
-              typeof(matrix[index][i].c) === 'number' ? matrix[index][i].c : null
+              typeof (matrix[index][i].c) === 'number' ? matrix[index][i].c : null
               : null
             : null,
         }]
       }
       return [...acc, arr]
     }, [])
-    console.log('newArr', newArr)
     setMatrix(newArr);
   }, [points])
 
   const fullnestMatrix = useMemo(() => {
-    const kek = matrix.every(itemRow => 
-      itemRow.every(itemCol => typeof(itemCol.c)==='number')
+    return matrix.every(itemRow =>
+      itemRow.every(itemCol => typeof (itemCol.c) === 'number')
     )
-    console.log('kek', kek)
-    return kek
   }, [matrix])
+
+  useEffect(() => {
+    const newMatrix = getDataFromLS('matrix') || [];
+    const newPoints = getDataFromLS('points') || { departure: [], destination: [] };
+
+    setMatrix(newMatrix);
+    setPoints(newPoints);
+  }, [])
+
+  useEffect(() => {
+    setDataToLS('matrix', matrix)
+  }, [matrix])
+
+  useEffect(() => {
+    setDataToLS('points', points)
+  }, [points])
 
   const handleChange = (value, name, typeOfKey) => {
     setCurrentPoint({
@@ -75,8 +88,6 @@ const FormPage = () => {
     const newMatrix = [...matrix]
     newValue = newValue.trim().replace(/\D/g, '');
     newMatrix[departureNumber][destinationNumder].c = newValue ? Number(newValue) : null
-    // console.log('#######', newMatrix, '#######')
-    // console.log('newMatrix', newMatrix)
     setMatrix(newMatrix)
   };
 
@@ -131,7 +142,7 @@ const FormPage = () => {
           {fullnestMatrix ?
             <Button
               fullWidth
-              
+
             >
               посчитать
             </Button>
