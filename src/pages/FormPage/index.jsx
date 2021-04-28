@@ -53,6 +53,14 @@ const FormPage = () => {
     setMatrix(newArr);
   }, [points])
 
+  const fullnestMatrix = useMemo(() => {
+    const kek = matrix.every(itemRow => 
+      itemRow.every(itemCol => typeof(itemCol.c)==='number')
+    )
+    console.log('kek', kek)
+    return kek
+  }, [matrix])
+
   const handleChange = (value, name, typeOfKey) => {
     setCurrentPoint({
       ...currentPoint,
@@ -63,10 +71,10 @@ const FormPage = () => {
     })
   };
 
-  const handleChangePrice = (departureNumber,  destinationNumder, newValue) => {
+  const handleChangePrice = (departureNumber, destinationNumder, newValue) => {
     const newMatrix = [...matrix]
     newValue = newValue.trim().replace(/\D/g, '');
-    newMatrix[departureNumber][destinationNumder].c = newValue  ? Number(newValue) : null
+    newMatrix[departureNumber][destinationNumder].c = newValue ? Number(newValue) : null
     // console.log('#######', newMatrix, '#######')
     // console.log('newMatrix', newMatrix)
     setMatrix(newMatrix)
@@ -120,6 +128,22 @@ const FormPage = () => {
             matrix={matrix}
             handleChangePrice={handleChangePrice}
           />
+          {fullnestMatrix ?
+            <Button
+              fullWidth
+              
+            >
+              посчитать
+            </Button>
+            :
+            <Button
+              fullWidth
+              disabled
+            >
+              посчитать
+            </Button>
+          }
+
         </Grid>
       </Grid>
     </div>

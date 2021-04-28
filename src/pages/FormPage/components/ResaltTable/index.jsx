@@ -29,8 +29,8 @@ const ResultTable = (props) => {
                 {item.map((item, indexCol) => (
                   <TableCell>
                     <Input 
-                      value={item.c || ''}
-                      onChange={({target: {value}})=>{console.log('111', 111);handleChangePrice(indexRow,indexCol,value)}}
+                      value={typeof(item.c)==='number' ? item.c : ''}
+                      onChange={({target: {value}})=>{handleChangePrice(indexRow,indexCol,value)}}
                     />
                   </TableCell>
                 ))}
