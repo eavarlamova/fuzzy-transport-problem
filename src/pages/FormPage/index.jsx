@@ -9,6 +9,7 @@ const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
   const [matrix, setMatrix] = useState([])
+  const [basePlan, setBasePlan] = useState([]);
   // const matrix1 = [
   //   [{ x: 11, c: 11 }, { x: 12, c: 12 }],
   //   [{ x: 21, c: 21 }, { x: 22, c: 22 }],
@@ -59,6 +60,7 @@ const FormPage = () => {
   }, [matrix])
 
   useEffect(() => {
+    console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
     const newMatrix = getDataFromLS('matrix') || [];
     const newPoints = getDataFromLS('points') || { departure: [], destination: [] };
 
@@ -67,7 +69,7 @@ const FormPage = () => {
   }, [])
 
   useEffect(() => {
-    setDataToLS('matrix', matrix)
+    matrix && setDataToLS('matrix', matrix)
   }, [matrix])
 
   useEffect(() => {
@@ -109,8 +111,58 @@ const FormPage = () => {
         [pointForSave]: {}
       });
     }
-
   };
+
+  const getTotalCosts = (basePlan) => (
+    basePlan.reduce((acc, item) => {
+      return acc = acc + item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
+    }, 0)
+  );
+
+  const countBasePlan = () => {
+    let allPriceRow = points.departure.map(item => Number(item.quality))
+    let allPriceCol = points.destination.map(item => Number(item.quality))
+
+    const newBasePlan = matrix.map((item, indexRow) => {
+      // let priceRow = Number(points.departure.quality);
+      // let priceCol = Number(points.destination.quality);
+      return item.map((item, indexCol) => {
+        let priceRow = allPriceRow[indexRow];
+        let priceCol = allPriceCol[indexCol];
+
+        if (priceCol === 0 || priceRow === 0) return { ...item, x: 0 }
+
+        const newX = priceRow < priceCol ? priceRow : priceCol;
+
+        allPriceRow[indexRow] = priceRow - newX;
+        allPriceCol[indexCol] = priceCol - newX;
+        return { ...item, x: newX }
+      })
+    })
+    const totalCosts = newBasePlan.reduce((acc, item) => {
+      return item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
+    }, 0)
+    console.log('totalCosts', totalCosts)
+    setBasePlan(newBasePlan);
+  };
+
+  const deletePoint = (key, indexForDelete) => {
+    const newPoints = { ...points, [key]: points[key].filter((item, index) => indexForDelete !== index) }
+    let newMatrix = [...matrix];
+    if (key === 'departure') {
+      newMatrix = matrix.filter((item, index) => index !== indexForDelete)
+    }
+    else if (key === 'destination') {
+      newMatrix = matrix.map((item, index) => (
+        item.filter((item, index) => index !== indexForDelete)
+      ))
+
+    }
+    // delete matrix
+    setMatrix(newMatrix)
+    setPoints(newPoints);
+  };
+
 
   return (
     <div className="form">
@@ -138,23 +190,34 @@ const FormPage = () => {
             points={points}
             matrix={matrix}
             handleChangePrice={handleChangePrice}
+            name='стоимость'
+            deletePoint={deletePoint}
           />
           {fullnestMatrix ?
             <Button
               fullWidth
-
+              onClick={countBasePlan}
             >
-              посчитать
+              посчитать опорный план
             </Button>
             :
             <Button
               fullWidth
               disabled
             >
-              посчитать
+              посчитать опорный план
             </Button>
           }
 
+
+          ОПОРНЫЙ ПЛАН
+          <ResaltTable
+            points={points}
+            matrix={basePlan}
+            name='значение'
+          // handleChangePrice={handleChangePrice}
+          />
+          ОБЩИЕ ЗАТРТАТЫ - {getTotalCosts(basePlan)}
         </Grid>
       </Grid>
     </div>

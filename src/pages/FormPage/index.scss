@@ -12,7 +12,16 @@
         background-color: rgba(60%, 60%, 60%, 0.6);
     }
 
+    &_quality {
+        background-color: rgba(60%, 60%, 60%, 0.2);
+    }
+    &_delete-icon {
+        position: absolute;
+        top: 0;
+        right:  0;
+    }
     th, td {
+        position: relative;
         text-align: center;
         border-left: 1px solid rgba(224, 224, 224, 1);
     }
