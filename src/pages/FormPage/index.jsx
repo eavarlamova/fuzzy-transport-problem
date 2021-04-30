@@ -131,11 +131,27 @@ const FormPage = () => {
     }
   };
 
-  const getTotalCosts = (basePlan) => (
+  const getTotalCostsByCKey = (basePlan, key='c') => (
     basePlan.reduce((acc, item) => {
-      return acc = acc + item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
+      return acc = acc + item.reduce((acc, item) => (
+        acc = acc + item[key] * item.x
+      ), 0)
     }, 0)
   );
+  const getTotalCosts = (basePlan) => {
+    if (fuzzyDataControl) {
+      const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
+      const totalCosts = getTotalCostsByCKey(basePlan)
+      const maxTotalCosts = getTotalCostsByCKey(basePlan, 'cMax')
+      console.log('#######', [minTotalCosts, totalCosts, maxTotalCosts], '#######')
+      return [minTotalCosts, totalCosts, maxTotalCosts];
+    }
+    else {
+      return getTotalCostsByCKey(basePlan)
+    }
+
+
+  };
 
   const countBasePlan = () => {
     let allPriceRow = points.departure.map(item => Number(item.quality))
@@ -221,13 +237,13 @@ const FormPage = () => {
             fuzzyDataControl={fuzzyDataControl}
           />
           {/* {fullnestMatrix ? */}
-            <Button
-              fullWidth
-              onClick={countBasePlan}
-            >
-              посчитать опорный план
+          <Button
+            fullWidth
+            onClick={countBasePlan}
+          >
+            посчитать опорный план
             </Button>
-            {/* :
+          {/* :
             <Button
               fullWidth
               disabled
