@@ -47,198 +47,207 @@ const FormPage = () => {
           cMin: getCorrectNumberValue(matrix, index, i, 'cMin'),
           cMax: getCorrectNumberValue(matrix, index, i, 'cMax'),
         }]
-    }
+      }
       return [...acc, arr]
+    }, [])
+    setMatrix(newArr);
+  }, [points])
+
+  const fullnestMatrix = useMemo(() => {
+    return (
+      fuzzyDataControl ?
+        matrix.every(itemRow =>
+          itemRow.every(itemCol => typeof (itemCol.c) === 'number'
+            && typeof (itemCol.cMin) === 'number'
+            && typeof (itemCol.cMax) === 'number'
+          )
+        )
+        :
+        matrix.every(itemRow =>
+          itemRow.every(itemCol => typeof (itemCol.c) === 'number')
+        ))
+  }, [matrix])
+
+  useEffect(() => {
+    console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
+    const newMatrix = getDataFromLS('matrix') || [];
+    const newPoints = getDataFromLS('points') || { departure: [], destination: [] };
+    const newFuzzyDataControl = getDataFromLS('fuzzyDataControl' || false)
+    console.log('newMatrix in useEffect', newMatrix)
+    setMatrix(newMatrix);
+    setPoints(newPoints);
+    setFuzzyDataControl(newFuzzyDataControl);
   }, [])
-  setMatrix(newArr);
-}, [points])
 
-const fullnestMatrix = useMemo(() => {
-  return matrix.every(itemRow =>
-    itemRow.every(itemCol => typeof (itemCol.c) === 'number')
-  )
-}, [matrix])
+  useEffect(() => {
+    matrix && setDataToLS('matrix', matrix)
+  }, [matrix])
 
-useEffect(() => {
-  console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
-  const newMatrix = getDataFromLS('matrix') || [];
-  const newPoints = getDataFromLS('points') || { departure: [], destination: [] };
-  const newFuzzyDataControl = getDataFromLS('fuzzyDataControl' || false)
-  console.log('newMatrix in useEffect', newMatrix)
-  setMatrix(newMatrix);
-  setPoints(newPoints);
-  setFuzzyDataControl(newFuzzyDataControl);
-}, [])
+  useEffect(() => {
+    setDataToLS('points', points)
+  }, [points])
 
-useEffect(() => {
-  matrix && setDataToLS('matrix', matrix)
-}, [matrix])
+  useEffect(() => {
+    setDataToLS('fuzzyDataControl', fuzzyDataControl)
+  }, [fuzzyDataControl])
 
-useEffect(() => {
-  setDataToLS('points', points)
-}, [points])
-
-useEffect(() => {
-  setDataToLS('fuzzyDataControl', fuzzyDataControl)
-}, [fuzzyDataControl])
-
-const handleChange = (value, name, typeOfKey) => {
-  setCurrentPoint({
-    ...currentPoint,
-    [name]: {
-      ...currentPoint[name],
-      [typeOfKey]: value,
-    }
-  })
-};
-
-const handleChangePrice = (departureNumber, destinationNumder, newValue, key = 'c') => {
-  const newMatrix = [...matrix]
-  newValue = newValue.trim().replace(/\D/g, '');
-  // newMatrix[departureNumber][destinationNumder].c = newValue ? Number(newValue) : null
-  newMatrix[departureNumber][destinationNumder][key] = newValue ? Number(newValue) : null;
-  // console.log('newMatrix', newMatrix)
-  setMatrix(newMatrix)
-};
-
-const addNewPoint = (pointForSave) => {
-  const { name, quality } = currentPoint[pointForSave];
-  if (name && name.trim() && quality) {
-    setPoints({
-      ...points,
-      [pointForSave]: [
-        ...points[pointForSave],
-        {
-          name: name.trim(),
-          quality,
-        },
-      ]
-    });
+  const handleChange = (value, name, typeOfKey) => {
     setCurrentPoint({
       ...currentPoint,
-      [pointForSave]: {}
-    });
-  }
-};
-
-const getTotalCosts = (basePlan) => (
-  basePlan.reduce((acc, item) => {
-    return acc = acc + item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
-  }, 0)
-);
-
-const countBasePlan = () => {
-  let allPriceRow = points.departure.map(item => Number(item.quality))
-  let allPriceCol = points.destination.map(item => Number(item.quality))
-
-  const newBasePlan = matrix.map((item, indexRow) => {
-    // let priceRow = Number(points.departure.quality);
-    // let priceCol = Number(points.destination.quality);
-    return item.map((item, indexCol) => {
-      let priceRow = allPriceRow[indexRow];
-      let priceCol = allPriceCol[indexCol];
-
-      if (priceCol === 0 || priceRow === 0) return { ...item, x: 0 }
-
-      const newX = priceRow < priceCol ? priceRow : priceCol;
-
-      allPriceRow[indexRow] = priceRow - newX;
-      allPriceCol[indexCol] = priceCol - newX;
-      return { ...item, x: newX }
+      [name]: {
+        ...currentPoint[name],
+        [typeOfKey]: value,
+      }
     })
-  })
-  // const totalCosts = newBasePlan.reduce((acc, item) => {
-  //   return item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
-  // }, 0)
-  setBasePlan(newBasePlan);
-};
+  };
 
-const deletePoint = (key, indexForDelete) => {
-  const newPoints = { ...points, [key]: points[key].filter((item, index) => indexForDelete !== index) }
-  let newMatrix = [...matrix];
-  if (key === 'departure') {
-    newMatrix = matrix.filter((item, index) => index !== indexForDelete)
+  const handleChangePrice = (departureNumber, destinationNumder, newValue, key = 'c') => {
+    const newMatrix = [...matrix]
+    newValue = newValue.trim().replace(/\D/g, '');
+    // newMatrix[departureNumber][destinationNumder].c = newValue ? Number(newValue) : null
+    newMatrix[departureNumber][destinationNumder][key] = newValue ? Number(newValue) : null;
+    // console.log('newMatrix', newMatrix)
+    setMatrix(newMatrix)
+  };
+
+  const addNewPoint = (pointForSave) => {
+    const { name, quality } = currentPoint[pointForSave];
+    if (name && name.trim() && quality) {
+      setPoints({
+        ...points,
+        [pointForSave]: [
+          ...points[pointForSave],
+          {
+            name: name.trim(),
+            quality,
+          },
+        ]
+      });
+      setCurrentPoint({
+        ...currentPoint,
+        [pointForSave]: {}
+      });
+    }
+  };
+
+  const getTotalCosts = (basePlan) => (
+    basePlan.reduce((acc, item) => {
+      return acc = acc + item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
+    }, 0)
+  );
+
+  const countBasePlan = () => {
+    let allPriceRow = points.departure.map(item => Number(item.quality))
+    let allPriceCol = points.destination.map(item => Number(item.quality))
+
+    const newBasePlan = matrix.map((item, indexRow) => {
+      // let priceRow = Number(points.departure.quality);
+      // let priceCol = Number(points.destination.quality);
+      return item.map((item, indexCol) => {
+        let priceRow = allPriceRow[indexRow];
+        let priceCol = allPriceCol[indexCol];
+
+        if (priceCol === 0 || priceRow === 0) return { ...item, x: 0 }
+
+        const newX = priceRow < priceCol ? priceRow : priceCol;
+
+        allPriceRow[indexRow] = priceRow - newX;
+        allPriceCol[indexCol] = priceCol - newX;
+        return { ...item, x: newX }
+      })
+    })
+    // const totalCosts = newBasePlan.reduce((acc, item) => {
+    //   return item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
+    // }, 0)
+    setBasePlan(newBasePlan);
+  };
+
+  const deletePoint = (key, indexForDelete) => {
+    const newPoints = { ...points, [key]: points[key].filter((item, index) => indexForDelete !== index) }
+    let newMatrix = [...matrix];
+    if (key === 'departure') {
+      newMatrix = matrix.filter((item, index) => index !== indexForDelete)
+    }
+    else if (key === 'destination') {
+      newMatrix = matrix.map((item, index) => (
+        item.filter((item, index) => index !== indexForDelete)
+      ))
+
+    }
+
+    setMatrix(newMatrix)
+    setPoints(newPoints);
+  };
+  const setFuzzyInput = () => {
+    setFuzzyDataControl(!fuzzyDataControl)
   }
-  else if (key === 'destination') {
-    newMatrix = matrix.map((item, index) => (
-      item.filter((item, index) => index !== indexForDelete)
-    ))
 
-  }
-
-  setMatrix(newMatrix)
-  setPoints(newPoints);
-};
-const setFuzzyInput = () => {
-  setFuzzyDataControl(!fuzzyDataControl)
-}
-
-return (
-  <div className="form">
-    <Grid
-      container
-      className="form__add"
-      justify='space-around'
-    >
-      <AddingForm
-        name='ПУНКТ ОТПРАВЛЕНИЯ'
-        type='departure'
-        handleChange={handleChange}
-        addNewPoint={addNewPoint}
-        currentPoint={currentPoint.departure}
-      />
-      <AddingForm
-        name='ПУНКТ НАЗНАЧЕНИЯ'
-        type='destination'
-        handleChange={handleChange}
-        addNewPoint={addNewPoint}
-        currentPoint={currentPoint.destination}
-      />
-      <Grid item xs={12}>
-
-        <FormControlLabel
-          control={<Switch checked={fuzzyDataControl} onChange={setFuzzyInput} />}
-          label="нечеткие данные"
+  return (
+    <div className="form">
+      <Grid
+        container
+        className="form__add"
+        justify='space-around'
+      >
+        <AddingForm
+          name='ПУНКТ ОТПРАВЛЕНИЯ'
+          type='departure'
+          handleChange={handleChange}
+          addNewPoint={addNewPoint}
+          currentPoint={currentPoint.departure}
         />
-      </Grid>
-      <Grid item xs={12} >
-        <ResaltTable
-          points={points}
-          matrix={matrix}
-          handleChangePrice={handleChangePrice}
-          name='стоимость'
-          deletePoint={deletePoint}
-          fuzzyDataControl={fuzzyDataControl}
+        <AddingForm
+          name='ПУНКТ НАЗНАЧЕНИЯ'
+          type='destination'
+          handleChange={handleChange}
+          addNewPoint={addNewPoint}
+          currentPoint={currentPoint.destination}
         />
-        {fullnestMatrix ?
-          <Button
-            fullWidth
-            onClick={countBasePlan}
-          >
-            посчитать опорный план
+        <Grid item xs={12}>
+
+          <FormControlLabel
+            control={<Switch checked={fuzzyDataControl} onChange={setFuzzyInput} />}
+            label="нечеткие данные"
+          />
+        </Grid>
+        <Grid item xs={12} >
+          <ResaltTable
+            points={points}
+            matrix={matrix}
+            handleChangePrice={handleChangePrice}
+            name='стоимость'
+            deletePoint={deletePoint}
+            fuzzyDataControl={fuzzyDataControl}
+          />
+          {fullnestMatrix ?
+            <Button
+              fullWidth
+              onClick={countBasePlan}
+            >
+              посчитать опорный план
             </Button>
-          :
-          <Button
-            fullWidth
-            disabled
-          >
-            посчитать опорный план
+            :
+            <Button
+              fullWidth
+              disabled
+            >
+              посчитать опорный план
             </Button>
-        }
+          }
 
 
           ОПОРНЫЙ ПЛАН
           <ResaltTable
-          points={points}
-          matrix={basePlan}
-          name='значение'
-        // handleChangePrice={handleChangePrice}
-        />
+            points={points}
+            matrix={basePlan}
+            name='значение'
+          // handleChangePrice={handleChangePrice}
+          />
           ОБЩИЕ ЗАТРТАТЫ - {getTotalCosts(basePlan)}
+        </Grid>
       </Grid>
-    </Grid>
-  </div>
-);
+    </div>
+  );
 };
 
 export default memo(FormPage)
