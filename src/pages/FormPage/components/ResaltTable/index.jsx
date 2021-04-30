@@ -72,15 +72,19 @@ const ResultTable = (props) => {
                             {
                               fuzzyDataControl ?
                                 <>
-                                  <Input 
-                                  placeholder='введите min значение'
+                                  <Input
+                                    value={typeof (item.cMin) === 'number' ? item.cMin : ''}
+                                    onChange={({ target: { value } }) => { handleChangePrice(indexRow, indexCol, value, 'cMin') }}
+                                    placeholder={`введите min ${name} перевозки 1единицы`}
                                   />
-                                  <Input 
-                                  placeholder='введите среднее значение'
-                                  />
-                                  <Input 
-                                  placeholder='введите max значение'
-                                  />
+                                  <Input
+                                    value={typeof (item.c) === 'number' ? item.c : ''}
+                                    onChange={({ target: { value } }) => { handleChangePrice(indexRow, indexCol, value) }}
+                                    placeholder={`введите сред. ${name} перевозки 1единицы`} />
+                                  <Input
+                                    value={typeof (item.cMax) === 'number' ? item.cMax : ''}
+                                    onChange={({ target: { value } }) => { handleChangePrice(indexRow, indexCol, value, 'cMax') }}
+                                    placeholder={`введите max ${name} перевозки 1единицы`} />
                                 </>
                                 :
                                 <Input
