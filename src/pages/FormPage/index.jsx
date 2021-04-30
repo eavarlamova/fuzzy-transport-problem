@@ -144,7 +144,7 @@ const FormPage = () => {
       const totalCosts = getTotalCostsByCKey(basePlan)
       const maxTotalCosts = getTotalCostsByCKey(basePlan, 'cMax')
       console.log('#######', [minTotalCosts, totalCosts, maxTotalCosts], '#######')
-      return [minTotalCosts, totalCosts, maxTotalCosts];
+      return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})` ;
     }
     else {
       return getTotalCostsByCKey(basePlan)
