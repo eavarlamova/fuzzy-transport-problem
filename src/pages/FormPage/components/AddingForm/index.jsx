@@ -24,24 +24,39 @@ const AddingForm = (props) => {
       <Typography variant="h5">{name}</Typography>
       <Grid container spacing={3}>
         <Grid item xs={9} >
-          <Input
-            className={`form__add-${type}-name`}
-            name={type}
-            value={currentPoint.name || ''}
-            onChange={({ target: { value, name } }) => handleChange(value, name, 'name')}
-            placeholder="название"
-            fullWidth
-          />
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              addNewPoint(type);
+            }}>
+            <Input
+              className={`form__add-${type}-name`}
+              name={type}
+              value={currentPoint.name || ''}
+              onChange={
+                ({ target: { value, name } }) => {
+                  handleChange(value, name, 'name')
+                }}
+              placeholder="название"
+              fullWidth
+            />
+          </form>
         </Grid>
         <Grid item xs={3}>
-          <Input
-            className={`form__add-${type}-quality`}
-            name={type}
-            value={currentPoint.quality || ''}
-            onChange={handleChangeQuality}
-            placeholder="кол-во товара"
-            fullWidth
-          />
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              addNewPoint(type);
+            }}>
+            <Input
+              className={`form__add-${type}-quality`}
+              name={type}
+              value={currentPoint.quality || ''}
+              onChange={handleChangeQuality}
+              placeholder="кол-во товара"
+              fullWidth
+            />
+          </form>
         </Grid>
       </Grid>
       <Button

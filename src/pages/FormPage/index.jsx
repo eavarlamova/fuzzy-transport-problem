@@ -92,6 +92,7 @@ const FormPage = () => {
   }, [fuzzyDataControl])
 
   const handleChange = (value, name, typeOfKey) => {
+    console.log('handleChange', value, name, typeOfKey)
     setCurrentPoint({
       ...currentPoint,
       [name]: {
@@ -219,21 +220,21 @@ const FormPage = () => {
             deletePoint={deletePoint}
             fuzzyDataControl={fuzzyDataControl}
           />
-          {fullnestMatrix ?
+          {/* {fullnestMatrix ? */}
             <Button
               fullWidth
               onClick={countBasePlan}
             >
               посчитать опорный план
             </Button>
-            :
+            {/* :
             <Button
               fullWidth
               disabled
             >
               посчитать опорный план
             </Button>
-          }
+          } */}
 
 
           ОПОРНЫЙ ПЛАН
