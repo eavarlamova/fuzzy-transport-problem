@@ -2,6 +2,7 @@ import { Button, Card, Grid, Input, Typography, FormControlLabel, Switch } from 
 import React, { memo, useState, useMemo, useCallback, useEffect } from 'react';
 import AddingForm from "./components/AddingForm";
 import ResaltTable from "./components/ResaltTable";
+import SteppingStoneCount from "./components/SteppingStoneCount";
 import { setDataToLS, getDataFromLS } from '../../helpers/localStorage';
 import './index.scss';
 
@@ -9,7 +10,7 @@ const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
   const [matrix, setMatrix] = useState([])
-  const [basePlan, setBasePlan] = useState([]);
+  // const [basePlan, setBasePlan] = useState([]);
   const [fuzzyDataControl, setFuzzyDataControl] = useState(false)
   // const matrix1 = [
   //   [{ x: 11, c: 11, cMin: 0, cMax:10, }, { x: 12, c: 12 }],
@@ -131,7 +132,7 @@ const FormPage = () => {
     }
   };
 
-  const getTotalCostsByCKey = (basePlan, key='c') => (
+  const getTotalCostsByCKey = (basePlan, key = 'c') => (
     basePlan.reduce((acc, item) => {
       return acc = acc + item.reduce((acc, item) => (
         acc = acc + item[key] * item.x
@@ -143,21 +144,17 @@ const FormPage = () => {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
       const totalCosts = getTotalCostsByCKey(basePlan)
       const maxTotalCosts = getTotalCostsByCKey(basePlan, 'cMax')
-      console.log('#######', [minTotalCosts, totalCosts, maxTotalCosts], '#######')
-      return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})` ;
+      return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})`;
     }
-    else {
-      return getTotalCostsByCKey(basePlan)
-    }
-
-
+    return getTotalCostsByCKey(basePlan)
   };
 
   const countBasePlan = () => {
     let allPriceRow = points.departure.map(item => Number(item.quality))
     let allPriceCol = points.destination.map(item => Number(item.quality))
 
-    const newBasePlan = matrix.map((item, indexRow) => {
+    // updateMatrix - is a matrix with base plan and costs
+    const updateMatrix = matrix.map((item, indexRow) => {
       // let priceRow = Number(points.departure.quality);
       // let priceCol = Number(points.destination.quality);
       return item.map((item, indexCol) => {
@@ -173,10 +170,7 @@ const FormPage = () => {
         return { ...item, x: newX }
       })
     })
-    // const totalCosts = newBasePlan.reduce((acc, item) => {
-    //   return item.reduce((acc, item) => acc = acc + item.c * item.x, 0)
-    // }, 0)
-    setBasePlan(newBasePlan);
+    setMatrix(updateMatrix);
   };
 
   const deletePoint = (key, indexForDelete) => {
@@ -256,11 +250,15 @@ const FormPage = () => {
           ОПОРНЫЙ ПЛАН
           <ResaltTable
             points={points}
-            matrix={basePlan}
+            matrix={matrix}
             name='значение'
-          // handleChangePrice={handleChangePrice}
           />
-          ОБЩИЕ ЗАТРТАТЫ - {getTotalCosts(basePlan)}
+          ОБЩИЕ ЗАТРТАТЫ - {getTotalCosts(matrix)}
+
+          <SteppingStoneCount
+            matrix={matrix}
+            points={points}
+          />
         </Grid>
       </Grid>
     </div>

@@ -38,13 +38,10 @@ const ResultTable = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {console.log('matrix', matrix)}
           {matrix.map((item, indexRow) => {
             return (
               <>
-
                 <TableRow>
-
                   <TableCell className='table_name'>
                     {
                       deletePoint
@@ -102,7 +99,7 @@ const ResultTable = (props) => {
 
 
                   ))}
-                  <TableCell className="table_quality">
+                  <TableCell className="table_quality" >
                     {points.departure[indexRow].quality}
                   </TableCell>
                 </TableRow>
@@ -115,6 +112,11 @@ const ResultTable = (props) => {
               ЗАЯВКА <br /> b<sub>j</sub>
             </TableCell>
             {points.destination.map(item => <TableCell className="table_quality" >{item.quality}</TableCell>)}
+            <TableCell>
+              {points.departure.reduce((acc,item)=>(acc=acc+Number(item.quality)),0)}
+              =
+              {points.destination.reduce((acc,item)=>(acc=acc+Number(item.quality)),0)}
+            </TableCell>
           </TableRow>
           {/* <TableRow>
             <TableCell>
