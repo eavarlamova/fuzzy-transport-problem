@@ -45,6 +45,9 @@ const SteppingStoneCount = (props) => {
         let currentCell = currentRow[col];
         haveFullX = haveFullX || Boolean(currentCell.x);
 
+        let indexOX = null;
+        let indexOY = null;
+
         if (currentCell.x === 0) {
           // мы нашли пустую клетку
           tempMatrix[row][col].x = 1;
@@ -55,6 +58,7 @@ const SteppingStoneCount = (props) => {
             for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
               if (matrix[row][leftCol].x !== 0) {
                 tempMatrix[row][leftCol].x--;
+                indexOX = leftCol;
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
@@ -63,6 +67,7 @@ const SteppingStoneCount = (props) => {
             for(let bottomRow = row+1; bottomRow < rowCount; bottomRow++){
               if(matrix[bottomRow][col].x){
                 tempMatrix[bottomRow][col].x--;
+                indexOY = bottomRow;
                 // console.log('tempMatrix[bottomRow][col]', tempMatrix[bottomRow][col])
                 break;
               }
@@ -73,6 +78,7 @@ const SteppingStoneCount = (props) => {
             for (let rigthCol = col + 1; rigthCol < colCount; rigthCol++) {
               if (matrix[row][rigthCol].x !== 0) {
                 tempMatrix[row][rigthCol].x--;
+                indexOX = rigthCol;
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
@@ -82,6 +88,7 @@ const SteppingStoneCount = (props) => {
             for(let topRow = row-1; topRow >= 0; topRow--){
               if(matrix[topRow][col].x){
                 tempMatrix[topRow][col].x--;
+                indexOY = topRow;
                 break;
               }
             }
@@ -90,7 +97,13 @@ const SteppingStoneCount = (props) => {
 
 
 
-
+          if(tempMatrix[indexOY][indexOX]){
+            tempMatrix[indexOY][indexOX].x++;
+            console.log('####### WIN #######')
+          }
+          else {
+            // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
+          }
           console.log('#######', tempMatrix, '#######')
         }
         tempMatrix = getDeepClone();
