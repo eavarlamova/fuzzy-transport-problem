@@ -254,7 +254,7 @@ const FormPage = () => {
             name='значение'
           />
           ОБЩИЕ ЗАТРТАТЫ - {getTotalCosts(matrix)}
-
+{console.log('matrix in FORM', matrix)}
           <SteppingStoneCount
             matrix={matrix}
             points={points}

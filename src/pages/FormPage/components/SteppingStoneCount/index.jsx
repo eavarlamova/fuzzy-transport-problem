@@ -7,6 +7,8 @@ const SteppingStoneCount = (props) => {
     points,
   } = props;
 
+  const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
+
   const kek = () => {
     let findCol = null;
     // const updateMatrix = 
@@ -34,7 +36,7 @@ const SteppingStoneCount = (props) => {
     const colCount = matrix[0].length;
 
     // const tempMatrix = matrix
-    const tempMatrix = JSON.parse(JSON.stringify(matrix))
+    let tempMatrix = getDeepClone()
     for (let row = 0; row < matrix.length; row++) {
       const currentRow = matrix[row];
 
@@ -46,11 +48,22 @@ const SteppingStoneCount = (props) => {
         if (currentCell.x === 0) {
           // мы нашли пустую клетку
           tempMatrix[row][col].x = 1;
+
+          // ПОИСК БОКОВЫХ НЕПУСТЫХ ГРАНИЦ
           if (haveFullX) {
             // ищем ближайщую НЕпустую клетку справа
             for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
               if (matrix[row][leftCol].x !== 0) {
+                tempMatrix[row][leftCol].x--;
                 // console.log('#######', matrix[row][rigthCol], '#######')
+                break;
+              }
+            }
+
+            for(let bottomRow = row+1; bottomRow < rowCount; bottomRow++){
+              if(matrix[bottomRow][col].x){
+                tempMatrix[bottomRow][col].x--;
+                // console.log('tempMatrix[bottomRow][col]', tempMatrix[bottomRow][col])
                 break;
               }
             }
@@ -59,14 +72,32 @@ const SteppingStoneCount = (props) => {
             // ищем слева, тк нет справа никаких заполненных не 0 x
             for (let rigthCol = col + 1; rigthCol < colCount; rigthCol++) {
               if (matrix[row][rigthCol].x !== 0) {
+                tempMatrix[row][rigthCol].x--;
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
             }
+
+            // тк у нас нет впереди значений, то поиск по оси ОУ будет вверх
+            for(let topRow = row-1; topRow >= 0; topRow--){
+              if(matrix[topRow][col].x){
+                tempMatrix[topRow][col].x--;
+                break;
+              }
+            }
           }
+
+
+
+
+
+          console.log('#######', tempMatrix, '#######')
         }
+        tempMatrix = getDeepClone();
+        // обнулить темпМатрикс
+        // посчитать y[row][col] по темпМатрикс
       }
-      console.log('row', row)
+      // console.log('row', row)
     }
   };
 
