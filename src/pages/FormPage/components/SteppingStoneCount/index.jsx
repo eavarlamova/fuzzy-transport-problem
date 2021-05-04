@@ -57,36 +57,13 @@ const SteppingStoneCount = (props) => {
     }
   }
 
-  const getNewOXCoordinateForBottomNullCell = (start, end, rowIndex) => {
 
-  }
   const kek = () => {
     let findCol = null;
-    // const updateMatrix = 
-    // matrix.map((row, rowIndex) => {
 
-    //   return (
-    //     row.map((cell, colIndex, row) => {
-    //       if(cell.x === 0) {
-    //         // +1
-    //         for (let i = colIndex; i >= 0; i--){
-    //           if(row[i].x !== 0) {
-    //             row[i].x++;
-    //             findCol = i;
-    //             break;
-    //           }
-    //         } 
-    //         // return {...cell, x: +1}
-
-    //       }
-    //       return ()
-    //     })
-    //   )
-    // })
     const rowCount = matrix.length;
     const colCount = matrix[0].length;
 
-    // const tempMatrix = matrix
     let tempMatrix = getDeepClone()
     for (let row = 0; row < matrix.length; row++) {
       const currentRow = matrix[row];
@@ -111,7 +88,6 @@ const SteppingStoneCount = (props) => {
                 tempMatrix[row][leftCol].x--;
                 indexOX = leftCol;
                 objOfCoordinat.OX1 = [row, leftCol];
-                // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
             }
@@ -121,7 +97,6 @@ const SteppingStoneCount = (props) => {
                 tempMatrix[bottomRow][col].x--;
                 indexOY = bottomRow;
                 objOfCoordinat.OY1 = [bottomRow, col];
-                // console.log('tempMatrix[bottomRow][col]', tempMatrix[bottomRow][col])
                 break;
               }
             }
@@ -133,7 +108,6 @@ const SteppingStoneCount = (props) => {
                 tempMatrix[row][rigthCol].x--;
                 indexOX = rigthCol;
                 objOfCoordinat.OX1 = [row, rigthCol];
-                // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
             }
@@ -149,68 +123,23 @@ const SteppingStoneCount = (props) => {
             }
           }
 
-          // console.log('indexOX, indexOY', indexOX, indexOY)
-          // console.log('objOfCoordinat', objOfCoordinat.original)
-
           if (tempMatrix[indexOY][indexOX].x) {
             tempMatrix[indexOY][indexOX].x++;
           }
           else {
-            // console.log('indexOX, col', indexOX, col)
-            // console.log('indexOX < col', indexOX < col)
             if (indexOX < col) {
 
               // find new OX coordinate
-              // for (
-              //   let newOXcoordinate = objOfCoordinat.OX1[1];
-              //   newOXcoordinate < objOfCoordinat.OY1[1];
-              //   newOXcoordinate++
-              // ) {
-              //   const OXSecondCoordinate = matrix[objOfCoordinat.OY1[0]][newOXcoordinate];
-              //   if (OXSecondCoordinate.x) {
-              //     // наша вторая координата OX
-              //     objOfCoordinat.OX2 = [objOfCoordinat.OY1[0], newOXcoordinate]
-              //     console.log('objOfCoordinat.OX2 --', objOfCoordinat.OX2)
-              //     break;
-              //   }
-              // }
               objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
               const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
               tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+
               // find new OY coordinat
-              // for (
-              //   let newOYcoordinate = objOfCoordinat.OY1[0];
-              //   newOYcoordinate > objOfCoordinat.OX1[0];
-              //   newOYcoordinate--
-              // ) {
-              //   if (matrix[newOYcoordinate][objOfCoordinat.OX1[1]].x) {
-              //     objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OX1[1]]
-              //     break;
-              //   }
-              // }
-              // !!!
               objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
               const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
               tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
             }
             else {
-              // for (
-              //   let newOXcoordinate = objOfCoordinat.OX1[1];
-              //   newOXcoordinate > objOfCoordinat.OY1[1];
-              //   newOXcoordinate--
-              // ) {
-              //   const OXSecondCoordinate = matrix[objOfCoordinat.OY1[0]][newOXcoordinate];
-              //   // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
-              //   if (OXSecondCoordinate.x) {
-              //     // наша вторая координата OX
-              //     objOfCoordinat.OX2 = [objOfCoordinat.OY1[0], newOXcoordinate]
-
-
-              //     // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
-              //     console.log(' objOfCoordinat.OX2 ', objOfCoordinat.OX2)
-              //     break;
-              //   }
-              // }
               objOfCoordinat.OX2 = getNewCoordinateMinus(
                 objOfCoordinat.OX1[1],
                 objOfCoordinat.OY1[1],
@@ -219,41 +148,18 @@ const SteppingStoneCount = (props) => {
               )
               const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
               tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-            
-              // console.log('objOfCoordinat.OX2',objOfCoordinat.OX2 )
 
               // find new OY coordinat
-              // for (
-              //   let newOYcoordinate = objOfCoordinat.OX1[0] - 1;
-              //   newOYcoordinate > objOfCoordinat.OY1[0] + 1;
-              //   newOYcoordinate--
-              // ) {
-              //   // console.log('#######',
-              //   //   objOfCoordinat.OX1[0] - 1,
-              //   //   newOYcoordinate,
-              //   //   objOfCoordinat.OY1[0],
-              //   //   '#######')
-              //   // console.log(
-              //   //   `matrix[newOYcoordinate][objOfCoordinat.OX1[1]]`,
-              //   //   matrix[newOYcoordinate][objOfCoordinat.OX1[1]]
-              //   // )
-              //   if (matrix[newOYcoordinate][objOfCoordinat.OX1[1]].x) {
-              //     objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OX1[1]]
-              //     console.log('objOfCoordinat.OY2 ', objOfCoordinat.OY2 )
-              //     break;
-              //   }
-              // }
               const newOY = getNewCoordinateMinus(
                 objOfCoordinat.OX1[0] - 1,
                 objOfCoordinat.OY1[0] + 1,
                 objOfCoordinat.OX1[1]
               )
-              if(newOY){
+              if (newOY) {
                 objOfCoordinat.OY2 = newOY;
                 const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
-                tempMatrix[coordinateRowOY2][coordinateColOY2].x++;  
+                tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
               }
-              // // console.log('objOfCoordinat.OY2', objOfCoordinat.OY2)
             }
             // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
           }
@@ -263,7 +169,6 @@ const SteppingStoneCount = (props) => {
         // обнулить темпМатрикс
         // посчитать y[row][col] по темпМатрикс
       }
-      // console.log('row', row)
     }
   };
 
