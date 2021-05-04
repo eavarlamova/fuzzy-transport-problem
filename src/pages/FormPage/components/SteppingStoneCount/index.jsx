@@ -173,26 +173,16 @@ const SteppingStoneCount = (props) => {
               }
 
               // find new OY coordinat
-              // console.log('objOfCoordinat.OXBase[0], oy',
-              //   objOfCoordinat.OXBase[0],
-              //   objOfCoordinat.OYBase[0]
-              // )
-              // for (
-              //   let newOYcoordinate = objOfCoordinat.OXBase[0] ;
-              //   newOYcoordinate > objOfCoordinat.OYBase[0];
-              //   newOYcoordinate--
-              // ) {
-              //   console.log('newOYcoordinate', newOYcoordinate)
-              //   console.log('objOfCoordinat.OXBase[1]', objOfCoordinat.OXBase[1])
-              //   console.log('#######', 
-              //   matrix[newOYcoordinate][objOfCoordinat.OXBase[1]]
-              //   , '#######')
-              //   if (matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x) {
-              //     console.log('matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x', matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x)
-              //     objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OXBase[1]]
-              //     break;
-              //   }
-              // }
+              for (
+                let newOYcoordinate = objOfCoordinat.OXBase[0] - 1  ;
+                newOYcoordinate >= objOfCoordinat.OYBase[0];
+                newOYcoordinate--
+              ) {
+                if (matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x) {
+                  objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OXBase[1]]
+                  break;
+                }
+              }
 
             }
             // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
