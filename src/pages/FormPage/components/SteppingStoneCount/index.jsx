@@ -47,11 +47,11 @@ const SteppingStoneCount = (props) => {
 
         let indexOX = null;
         let indexOY = null;
-
+        const objOfCoordinat = {};
         if (currentCell.x === 0) {
           // мы нашли пустую клетку
           tempMatrix[row][col].x = 1;
-
+          objOfCoordinat.original = [row, col];
           // ПОИСК БОКОВЫХ НЕПУСТЫХ ГРАНИЦ
           if (haveFullX) {
             // ищем ближайщую НЕпустую клетку справа
@@ -59,15 +59,17 @@ const SteppingStoneCount = (props) => {
               if (matrix[row][leftCol].x !== 0) {
                 tempMatrix[row][leftCol].x--;
                 indexOX = leftCol;
+                objOfCoordinat.OXBase = [row, leftCol];
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
             }
 
-            for(let bottomRow = row+1; bottomRow < rowCount; bottomRow++){
-              if(matrix[bottomRow][col].x){
+            for (let bottomRow = row + 1; bottomRow < rowCount; bottomRow++) {
+              if (matrix[bottomRow][col].x) {
                 tempMatrix[bottomRow][col].x--;
                 indexOY = bottomRow;
+                objOfCoordinat.OYBase = [bottomRow, col];
                 // console.log('tempMatrix[bottomRow][col]', tempMatrix[bottomRow][col])
                 break;
               }
@@ -79,16 +81,18 @@ const SteppingStoneCount = (props) => {
               if (matrix[row][rigthCol].x !== 0) {
                 tempMatrix[row][rigthCol].x--;
                 indexOX = rigthCol;
+                objOfCoordinat.OXBase = [row, rigthCol];
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
             }
 
             // тк у нас нет впереди значений, то поиск по оси ОУ будет вверх
-            for(let topRow = row-1; topRow >= 0; topRow--){
-              if(matrix[topRow][col].x){
+            for (let topRow = row - 1; topRow >= 0; topRow--) {
+              if (matrix[topRow][col].x) {
                 tempMatrix[topRow][col].x--;
                 indexOY = topRow;
+                objOfCoordinat.OYBase = [topRow, col];
                 break;
               }
             }
@@ -96,15 +100,104 @@ const SteppingStoneCount = (props) => {
 
 
 
-
-          if(tempMatrix[indexOY][indexOX]){
+          if (tempMatrix[indexOY][indexOX].x) {
             tempMatrix[indexOY][indexOX].x++;
-            console.log('####### WIN #######')
           }
           else {
+            if (indexOX < col) {
+
+              // console.log('indexOX', indexOX)
+              // console.log('col', col)
+
+              // find new OX coordinate
+              for (
+                let newOXcoordinate = objOfCoordinat.OXBase[1];
+                newOXcoordinate < objOfCoordinat.OYBase[1];
+                newOXcoordinate++
+              ) {
+                const OXSecondCoordinate = matrix[objOfCoordinat.OYBase[0]][newOXcoordinate];
+                if (OXSecondCoordinate.x) {
+                  // наша вторая координата OX
+                  objOfCoordinat.OX2 = [objOfCoordinat.OYBase[0], newOXcoordinate]
+                  break;
+                }
+              }
+
+              // find new OY coordinat
+              for (
+                let newOYcoordinate = objOfCoordinat.OYBase[0];
+                newOYcoordinate > objOfCoordinat.OXBase[0];
+                newOYcoordinate--
+              ) {
+                if (matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x) {
+                  objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OXBase[1]]
+                  break;
+                }
+              }
+
+
+
+              //               for (let findColIndex = indexOX; findColIndex < col; findColIndex++) {
+              //                 const rowSecondCoordinate = objOfCoordinat.OXBase[0];
+              //                 console.log('rowSecondCoordinate', rowSecondCoordinate)
+              //                 // console.log('findColIndex',findColIndex )
+              //                 if(matrix[rowSecondCoordinate][findColIndex].x){
+              //                   // console.log('#######', 'find new coordinate', matrix[rowSecondCoordinate][findColIndex].x , '#######')
+              // // console.log('objOfCoordinat', objOfCoordinat)
+              //                   // break
+              //                 }
+              //                 // console.log('####### 1111', objOfCoordinat.OXBase[0], '#######')
+              //                 // if(tempMatrix[][findColIndex])
+              //               }
+
+
+
+            }
+            else {
+              for (
+                let newOXcoordinate = objOfCoordinat.OXBase[1];
+                newOXcoordinate > objOfCoordinat.OYBase[1];
+                newOXcoordinate--
+              ) {
+                const OXSecondCoordinate = matrix[objOfCoordinat.OYBase[0]][newOXcoordinate];
+                // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
+                if (OXSecondCoordinate.x) {
+                  // наша вторая координата OX
+                  objOfCoordinat.OX2 = [objOfCoordinat.OYBase[0], newOXcoordinate]
+
+
+                  // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
+                  console.log(' objOfCoordinat.OX2 ', objOfCoordinat)
+                  break;
+                }
+              }
+
+              // find new OY coordinat
+              // console.log('objOfCoordinat.OXBase[0], oy',
+              //   objOfCoordinat.OXBase[0],
+              //   objOfCoordinat.OYBase[0]
+              // )
+              // for (
+              //   let newOYcoordinate = objOfCoordinat.OXBase[0] ;
+              //   newOYcoordinate > objOfCoordinat.OYBase[0];
+              //   newOYcoordinate--
+              // ) {
+              //   console.log('newOYcoordinate', newOYcoordinate)
+              //   console.log('objOfCoordinat.OXBase[1]', objOfCoordinat.OXBase[1])
+              //   console.log('#######', 
+              //   matrix[newOYcoordinate][objOfCoordinat.OXBase[1]]
+              //   , '#######')
+              //   if (matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x) {
+              //     console.log('matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x', matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x)
+              //     objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OXBase[1]]
+              //     break;
+              //   }
+              // }
+
+            }
             // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
           }
-          console.log('#######', tempMatrix, '#######')
+          // console.log('#######', tempMatrix, '#######')
         }
         tempMatrix = getDeepClone();
         // обнулить темпМатрикс
