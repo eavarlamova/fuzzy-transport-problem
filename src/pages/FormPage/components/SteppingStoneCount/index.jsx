@@ -9,6 +9,57 @@ const SteppingStoneCount = (props) => {
 
   const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
 
+  const getNewCoordinatePlus = function (start, end, index, from = 'top') {
+    for (
+      let newCoordinate = start;
+      newCoordinate < end;
+      newCoordinate++
+    ) {
+      let cell = {};
+      let cordinateArray = [];
+      if (from === 'top') {
+        cell = matrix[index][newCoordinate]
+        cordinateArray = [index, newCoordinate]
+      }
+      else if (from === 'bottom') {
+        cell = matrix[newCoordinate][index]
+        cordinateArray = [newCoordinate, index]
+      }
+      // const OXSecondCoordinate = matrix[index][newCoordinate];
+      if (cell.x) {
+        // наша вторая координата OX
+        return cordinateArray;
+      }
+    }
+  }
+
+  const getNewCoordinateMinus = (start, end, index, from = 'top') => {
+    //  если top, то определяется OY, возвращается [newCoordinate, col]
+    //  если bottom, то OX, возвращается [row, newCoordinate] 
+    for (
+      let newCoordinate = start;
+      newCoordinate > end;
+      newCoordinate--
+    ) {
+      let cell = {};
+      let cordinateArray = [];
+      if (from === 'top') {
+        cell = matrix[newCoordinate][index]
+        cordinateArray = [newCoordinate, index]
+      }
+      else if (from === 'bottom') {
+        cell = matrix[index][newCoordinate]
+        cordinateArray = [index, newCoordinate]
+      }
+      if (cell.x) {
+        return cordinateArray;
+      }
+    }
+  }
+
+  const getNewOXCoordinateForBottomNullCell = (start, end, rowIndex) => {
+
+  }
   const kek = () => {
     let findCol = null;
     // const updateMatrix = 
@@ -59,7 +110,7 @@ const SteppingStoneCount = (props) => {
               if (matrix[row][leftCol].x !== 0) {
                 tempMatrix[row][leftCol].x--;
                 indexOX = leftCol;
-                objOfCoordinat.OXBase = [row, leftCol];
+                objOfCoordinat.OX1 = [row, leftCol];
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
@@ -69,7 +120,7 @@ const SteppingStoneCount = (props) => {
               if (matrix[bottomRow][col].x) {
                 tempMatrix[bottomRow][col].x--;
                 indexOY = bottomRow;
-                objOfCoordinat.OYBase = [bottomRow, col];
+                objOfCoordinat.OY1 = [bottomRow, col];
                 // console.log('tempMatrix[bottomRow][col]', tempMatrix[bottomRow][col])
                 break;
               }
@@ -81,7 +132,7 @@ const SteppingStoneCount = (props) => {
               if (matrix[row][rigthCol].x !== 0) {
                 tempMatrix[row][rigthCol].x--;
                 indexOX = rigthCol;
-                objOfCoordinat.OXBase = [row, rigthCol];
+                objOfCoordinat.OX1 = [row, rigthCol];
                 // console.log('#######', matrix[row][rigthCol], '#######')
                 break;
               }
@@ -92,98 +143,109 @@ const SteppingStoneCount = (props) => {
               if (matrix[topRow][col].x) {
                 tempMatrix[topRow][col].x--;
                 indexOY = topRow;
-                objOfCoordinat.OYBase = [topRow, col];
+                objOfCoordinat.OY1 = [topRow, col];
                 break;
               }
             }
           }
 
-
+          // console.log('indexOX, indexOY', indexOX, indexOY)
+          // console.log('objOfCoordinat', objOfCoordinat.original)
 
           if (tempMatrix[indexOY][indexOX].x) {
             tempMatrix[indexOY][indexOX].x++;
           }
           else {
+            // console.log('indexOX, col', indexOX, col)
+            // console.log('indexOX < col', indexOX < col)
             if (indexOX < col) {
 
-              // console.log('indexOX', indexOX)
-              // console.log('col', col)
-
               // find new OX coordinate
-              for (
-                let newOXcoordinate = objOfCoordinat.OXBase[1];
-                newOXcoordinate < objOfCoordinat.OYBase[1];
-                newOXcoordinate++
-              ) {
-                const OXSecondCoordinate = matrix[objOfCoordinat.OYBase[0]][newOXcoordinate];
-                if (OXSecondCoordinate.x) {
-                  // наша вторая координата OX
-                  objOfCoordinat.OX2 = [objOfCoordinat.OYBase[0], newOXcoordinate]
-                  break;
-                }
-              }
+              // for (
+              //   let newOXcoordinate = objOfCoordinat.OX1[1];
+              //   newOXcoordinate < objOfCoordinat.OY1[1];
+              //   newOXcoordinate++
+              // ) {
+              //   const OXSecondCoordinate = matrix[objOfCoordinat.OY1[0]][newOXcoordinate];
+              //   if (OXSecondCoordinate.x) {
+              //     // наша вторая координата OX
+              //     objOfCoordinat.OX2 = [objOfCoordinat.OY1[0], newOXcoordinate]
+              //     console.log('objOfCoordinat.OX2 --', objOfCoordinat.OX2)
+              //     break;
+              //   }
+              // }
+              objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
 
               // find new OY coordinat
-              for (
-                let newOYcoordinate = objOfCoordinat.OYBase[0];
-                newOYcoordinate > objOfCoordinat.OXBase[0];
-                newOYcoordinate--
-              ) {
-                if (matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x) {
-                  objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OXBase[1]]
-                  break;
-                }
-              }
-
-
-
-              //               for (let findColIndex = indexOX; findColIndex < col; findColIndex++) {
-              //                 const rowSecondCoordinate = objOfCoordinat.OXBase[0];
-              //                 console.log('rowSecondCoordinate', rowSecondCoordinate)
-              //                 // console.log('findColIndex',findColIndex )
-              //                 if(matrix[rowSecondCoordinate][findColIndex].x){
-              //                   // console.log('#######', 'find new coordinate', matrix[rowSecondCoordinate][findColIndex].x , '#######')
-              // // console.log('objOfCoordinat', objOfCoordinat)
-              //                   // break
-              //                 }
-              //                 // console.log('####### 1111', objOfCoordinat.OXBase[0], '#######')
-              //                 // if(tempMatrix[][findColIndex])
-              //               }
-
-
-
+              // for (
+              //   let newOYcoordinate = objOfCoordinat.OY1[0];
+              //   newOYcoordinate > objOfCoordinat.OX1[0];
+              //   newOYcoordinate--
+              // ) {
+              //   if (matrix[newOYcoordinate][objOfCoordinat.OX1[1]].x) {
+              //     objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OX1[1]]
+              //     break;
+              //   }
+              // }
+              // !!!
+              objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
             }
             else {
-              for (
-                let newOXcoordinate = objOfCoordinat.OXBase[1];
-                newOXcoordinate > objOfCoordinat.OYBase[1];
-                newOXcoordinate--
-              ) {
-                const OXSecondCoordinate = matrix[objOfCoordinat.OYBase[0]][newOXcoordinate];
-                // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
-                if (OXSecondCoordinate.x) {
-                  // наша вторая координата OX
-                  objOfCoordinat.OX2 = [objOfCoordinat.OYBase[0], newOXcoordinate]
+              // for (
+              //   let newOXcoordinate = objOfCoordinat.OX1[1];
+              //   newOXcoordinate > objOfCoordinat.OY1[1];
+              //   newOXcoordinate--
+              // ) {
+              //   const OXSecondCoordinate = matrix[objOfCoordinat.OY1[0]][newOXcoordinate];
+              //   // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
+              //   if (OXSecondCoordinate.x) {
+              //     // наша вторая координата OX
+              //     objOfCoordinat.OX2 = [objOfCoordinat.OY1[0], newOXcoordinate]
 
 
-                  // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
-                  console.log(' objOfCoordinat.OX2 ', objOfCoordinat)
-                  break;
-                }
-              }
+              //     // console.log('OXSecondCoordinate.x', OXSecondCoordinate.x)
+              //     console.log(' objOfCoordinat.OX2 ', objOfCoordinat.OX2)
+              //     break;
+              //   }
+              // }
+              objOfCoordinat.OX2 = getNewCoordinateMinus(
+                objOfCoordinat.OX1[1],
+                objOfCoordinat.OY1[1],
+                objOfCoordinat.OY1[0],
+                'bottom'
+              )
+              // console.log('objOfCoordinat.OX2',objOfCoordinat.OX2 )
 
               // find new OY coordinat
-              for (
-                let newOYcoordinate = objOfCoordinat.OXBase[0] - 1  ;
-                newOYcoordinate >= objOfCoordinat.OYBase[0];
-                newOYcoordinate--
-              ) {
-                if (matrix[newOYcoordinate][objOfCoordinat.OXBase[1]].x) {
-                  objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OXBase[1]]
-                  break;
-                }
+              // for (
+              //   let newOYcoordinate = objOfCoordinat.OX1[0] - 1;
+              //   newOYcoordinate > objOfCoordinat.OY1[0] + 1;
+              //   newOYcoordinate--
+              // ) {
+              //   // console.log('#######',
+              //   //   objOfCoordinat.OX1[0] - 1,
+              //   //   newOYcoordinate,
+              //   //   objOfCoordinat.OY1[0],
+              //   //   '#######')
+              //   // console.log(
+              //   //   `matrix[newOYcoordinate][objOfCoordinat.OX1[1]]`,
+              //   //   matrix[newOYcoordinate][objOfCoordinat.OX1[1]]
+              //   // )
+              //   if (matrix[newOYcoordinate][objOfCoordinat.OX1[1]].x) {
+              //     objOfCoordinat.OY2 = [newOYcoordinate, objOfCoordinat.OX1[1]]
+              //     console.log('objOfCoordinat.OY2 ', objOfCoordinat.OY2 )
+              //     break;
+              //   }
+              // }
+              const newOY = getNewCoordinateMinus(
+                objOfCoordinat.OX1[0] - 1,
+                objOfCoordinat.OY1[0] + 1,
+                objOfCoordinat.OX1[1]
+              )
+              if(newOY){
+                objOfCoordinat.OY2 = newOY;
               }
-
+              // // console.log('objOfCoordinat.OY2', objOfCoordinat.OY2)
             }
             // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
           }
