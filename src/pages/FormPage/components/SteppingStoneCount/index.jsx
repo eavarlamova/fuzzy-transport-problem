@@ -175,7 +175,8 @@ const SteppingStoneCount = (props) => {
               //   }
               // }
               objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
-
+              const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
+              tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
               // find new OY coordinat
               // for (
               //   let newOYcoordinate = objOfCoordinat.OY1[0];
@@ -189,6 +190,8 @@ const SteppingStoneCount = (props) => {
               // }
               // !!!
               objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
+              const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
+              tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
             }
             else {
               // for (
@@ -214,6 +217,9 @@ const SteppingStoneCount = (props) => {
                 objOfCoordinat.OY1[0],
                 'bottom'
               )
+              const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
+              tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+            
               // console.log('objOfCoordinat.OX2',objOfCoordinat.OX2 )
 
               // find new OY coordinat
@@ -244,12 +250,14 @@ const SteppingStoneCount = (props) => {
               )
               if(newOY){
                 objOfCoordinat.OY2 = newOY;
+                const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
+                tempMatrix[coordinateRowOY2][coordinateColOY2].x++;  
               }
               // // console.log('objOfCoordinat.OY2', objOfCoordinat.OY2)
             }
             // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
           }
-          // console.log('#######', tempMatrix, '#######')
+          console.log('#######', tempMatrix, '#######')
         }
         tempMatrix = getDeepClone();
         // обнулить темпМатрикс
