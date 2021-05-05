@@ -57,50 +57,105 @@ const SteppingStoneCount = (props) => {
     }
   };
 
-  const manage = function manageMe(tempMatrix, objOfCoordinat, col) {
-    if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
-      tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x++;
+  // const manage = function manageMe(tempMatrix, objOfCoordinat, col) {
+  //   if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
+  //     tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x++;
+  //   }
+  //   else {
+  //     if (objOfCoordinat.OX1[1] < col) {
+
+  //       // find new OX coordinate
+  //       objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
+  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
+  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+
+  //       // find new OY coordinat
+  //       objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
+  //       const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
+  //       tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
+  //     }
+  //     else {
+  //       objOfCoordinat.OX2 = getNewCoordinateMinus(
+  //         objOfCoordinat.OX1[1],
+  //         objOfCoordinat.OY1[1],
+  //         objOfCoordinat.OY1[0],
+  //         'bottom'
+  //       )
+  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
+  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+
+  //       // find new OY coordinat
+  //       const newOY = getNewCoordinateMinus(
+  //         objOfCoordinat.OX1[0] - 1,
+  //         objOfCoordinat.OY1[0] + 1,
+  //         objOfCoordinat.OX1[1]
+  //       )
+  //       if (newOY) {
+  //         objOfCoordinat.OY2 = newOY;
+  //         const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
+  //         tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
+  //       }
+  //     }
+  //     // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
+  //   }
+
+  //   console.log('tempMatrix', tempMatrix)
+  //  };
+  const manage = function manageMe(tempMatrix, objOfCoordinat, col, numberOfCount = 1) {
+    const keyCountX = `OX${numberOfCount}`;
+    const keyCountY = `OY${numberOfCount}`;
+    const keyCountXNext = `OX${numberOfCount + 1}`
+    const keyCountYNext = `OY${numberOfCount + 1}`
+    if (tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x) {
+      tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x++;
     }
     else {
-      if (objOfCoordinat.OX1[1] < col) {
+      if (objOfCoordinat[keyCountX][1] < col) {
 
         // find new OX coordinate
-        objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
-        const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
+        objOfCoordinat[keyCountXNext] = getNewCoordinatePlus(
+          objOfCoordinat[keyCountX][1],
+          objOfCoordinat[keyCountY][1],
+          objOfCoordinat[keyCountY][0]
+        )
+        const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
         tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
 
         // find new OY coordinat
-        objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
-        const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
+        objOfCoordinat[keyCountYNext] = getNewCoordinateMinus(
+          objOfCoordinat[keyCountY][0],
+          objOfCoordinat[keyCountX][0],
+          objOfCoordinat[keyCountX][1]);
+        const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
         tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
       }
       else {
-        objOfCoordinat.OX2 = getNewCoordinateMinus(
-          objOfCoordinat.OX1[1],
-          objOfCoordinat.OY1[1],
-          objOfCoordinat.OY1[0],
+        objOfCoordinat[keyCountXNext] = getNewCoordinateMinus(
+          objOfCoordinat[keyCountX][1],
+          objOfCoordinat[keyCountY][1],
+          objOfCoordinat[keyCountY][0],
           'bottom'
         )
-        const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
+        const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
         tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
 
         // find new OY coordinat
         const newOY = getNewCoordinateMinus(
-          objOfCoordinat.OX1[0] - 1,
-          objOfCoordinat.OY1[0] + 1,
-          objOfCoordinat.OX1[1]
+          objOfCoordinat[keyCountX][0] - 1,
+          objOfCoordinat[keyCountY][0] + 1,
+          objOfCoordinat[keyCountX][1]
         )
         if (newOY) {
-          objOfCoordinat.OY2 = newOY;
-          const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
+          objOfCoordinat[keyCountYNext] = newOY;
+          const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
           tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
         }
       }
       // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
     }
-    
+
     console.log('tempMatrix', tempMatrix)
-   };
+  };
 
 
   const kek = () => {
