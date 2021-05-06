@@ -17,7 +17,7 @@ const SteppingStoneCount = (props) => {
   )
   // функция для поиска непустых ячеек слева(не нулевых Х) 
   // поиск  20 <=== 0
-  const findLeftNotNull = (
+  const findLeftNotNullNearest = (
     tempMatrix,
     objOfCoordinat,
     key = 'X',  // X по умолчанию, тк первое использование
@@ -25,6 +25,7 @@ const SteppingStoneCount = (props) => {
     //             для верхних нулевых значений матрицы
     //             т.е. первой проходки от 0
     numberOfCount = 0,
+    mathSigh = '-'
   ) => {
     // currentCell - координата текущей ячейки
     const currentCoordinatName =
@@ -36,7 +37,12 @@ const SteppingStoneCount = (props) => {
     for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
       if (matrix[row][leftCol].x !== 0) {
         // тут будет корректировака со знаком
-        tempMatrix[row][leftCol].x--;
+        if (mathSigh === '-') {
+          tempMatrix[row][leftCol].x--;
+        }
+        else {
+          tempMatrix[row][leftCol].x++;
+        }
         objOfCoordinat[nextCoordinatName] = [row, leftCol];
         // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
         // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
@@ -45,13 +51,41 @@ const SteppingStoneCount = (props) => {
     }
   }
 
+  const findLeftNotNullFurthest = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'X',  // X по умолчанию, тк первое использование
+    //             приходится на поиск ненулевого X по оси OX
+    //             для верхних нулевых значений матрицы
+    //             т.е. первой проходки от 0
+    numberOfCount = 0,
+    mathSigh = '-'
+  ) => {
+    // currentCell - координата текущей ячейки
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+
+    for (let leftCol = 0; leftCol < col; leftCol++) {
+      if (matrix[row][leftCol].x ) {
+        // тут будет корректировака со знаком
+          tempMatrix[row][leftCol].x++;
+        objOfCoordinat[nextCoordinatName] = [row, leftCol];
+        // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
+        // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  }
   // функция для поиска непустых ячеек снизу (не нулевых Х)
   //  0
   //  ||
   // \||/
   //  \/
   //  20
-  const findBottomNotNull = (
+  const findBottomNotNullNearest = (
     tempMatrix,
     objOfCoordinat,
     key = 'Y', // Y по умолчанию, тк первое использование
@@ -59,6 +93,7 @@ const SteppingStoneCount = (props) => {
     //            для верхних нулевых значений матрицы
     // =          т.е. первой проходки от 0
     numberOfCount = 0,
+    mathSign = '-',
   ) => {
     const currentCoordinatName =
       getCorrectKeyForObjOfCoordinat(key, numberOfCount)
@@ -71,7 +106,43 @@ const SteppingStoneCount = (props) => {
     for (let bottomRow = row + 1; bottomRow < rowLength; bottomRow++) {
       if (matrix[bottomRow][col].x) {
         // тут будет корректировака со знаком
-        tempMatrix[bottomRow][col].x--;
+        if (mathSign === '-') {
+          tempMatrix[bottomRow][col].x--;
+        }
+        else {
+          tempMatrix[bottomRow][col].x++;
+        }
+        objOfCoordinat[nextCoordinatName] = [bottomRow, col];
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  };
+
+  const findBottomNotNullFurthest = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'X', // X по умолчанию, тк это для 2, 4, 6 ...
+    //            прохода для изначальной координаты ОХ1
+    //            приходится на поиск ненулевого X по оси OY
+    //            для верхних нулевых значений матрицы
+    // =          т.е. второй проходки от 0
+    numberOfCount = 0,
+    // mathSign = '-',
+  ) => {
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+    const rowLength = tempMatrix.length;
+
+    for (let bottomRow = rowLength-1; bottomRow > row; bottomRow--) {
+
+      if (matrix[bottomRow][col].x) {
+        // тут будет корректировака со знаком
+        tempMatrix[bottomRow][col].x++;
+
         objOfCoordinat[nextCoordinatName] = [bottomRow, col];
         return { tempMatrix, objOfCoordinat };
       }
@@ -80,7 +151,7 @@ const SteppingStoneCount = (props) => {
 
   // функция для поиска непустых ячеек справа (не нулевых Х)
   // 0 ===> 20
-  const findRigthNotNull = (
+  const findRigthNotNullNearest = (
     tempMatrix,
     objOfCoordinat,
     key = 'X', // X по умолчанию, тк первое использование
@@ -112,7 +183,7 @@ const SteppingStoneCount = (props) => {
   //   /||\
   //    ||
   //    0
-  const findTopNotNull = (
+  const findTopNotNullNearest = (
     tempMatrix,
     objOfCoordinat,
     key = 'Y', // Y по умолчанию, тк первое использование
@@ -230,73 +301,190 @@ const SteppingStoneCount = (props) => {
 
   //   console.log('tempMatrix', tempMatrix)
   //  };
-  const manage = function manageMe(tempMatrix, objOfCoordinat, numberOfCount = 1) {
-    let keyCountX = `OX${numberOfCount}`;
-    let keyCountY = `OY${numberOfCount}`;
-    let keyCountXNext = `OX${numberOfCount + 1}`
-    let keyCountYNext = `OY${numberOfCount + 1}`
-    // console.log('keyCountY', keyCountY)
-    if (tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x) {
-      tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x++;
-      // return tempMatrix; 
-      objOfCoordinat.finish = [objOfCoordinat[keyCountY][0], objOfCoordinat[keyCountX][1]]
-      return;
+
+  // const manage = function manageMe(tempMatrix, objOfCoordinat, numberOfCount = 1) {
+  //   let keyCountX = `OX${numberOfCount}`;
+  //   let keyCountY = `OY${numberOfCount}`;
+  //   let keyCountXNext = `OX${numberOfCount + 1}`
+  //   let keyCountYNext = `OY${numberOfCount + 1}`
+  //   // console.log('keyCountY', keyCountY)
+  //   if (tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x) {
+  //     tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x++;
+  //     // return tempMatrix; 
+  //     objOfCoordinat.finish = [objOfCoordinat[keyCountY][0], objOfCoordinat[keyCountX][1]]
+  //     return;
+  //   }
+  //   else {
+  //     if (objOfCoordinat[keyCountX][1] < objOfCoordinat.original[1]) {
+
+  //       // find new OX coordinate
+  //       objOfCoordinat[keyCountXNext] = getNewCoordinatePlus(
+  //         objOfCoordinat[keyCountX][1],
+  //         objOfCoordinat[keyCountY][1],
+  //         objOfCoordinat[keyCountY][0]
+  //       )
+  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
+  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+
+  //       // find new OY coordinat
+  //       objOfCoordinat[keyCountYNext] = getNewCoordinateMinus(
+  //         objOfCoordinat[keyCountY][0],
+  //         objOfCoordinat[keyCountX][0],
+  //         objOfCoordinat[keyCountX][1]);
+
+  //       //           console.log(' OLD keyCountYNext', keyCountYNext)
+  //       // console.log(' OLD objOfCoordinat[keyCountYNext]',  objOfCoordinat[keyCountYNext])
+
+  //       //         findLeftNotNull(keyCountY, tempMatrix, objOfCoordinat, 'Y', 1)
+  //       const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
+  //       tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
+  //     }
+  //     else {
+  //       // console.log('objOfCoordinat[keyCountY]', objOfCoordinat[keyCountY])
+  //       objOfCoordinat[keyCountXNext] = getNewCoordinateMinus(
+  //         objOfCoordinat[keyCountX][1],
+  //         objOfCoordinat[keyCountY][1],
+  //         objOfCoordinat[keyCountY][0],
+  //         'bottom'
+  //       )
+  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
+  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+
+  //       // find new OY coordinat
+  //       const newOY = getNewCoordinateMinus(
+  //         objOfCoordinat[keyCountX][0] - 1,
+  //         objOfCoordinat[keyCountY][0] + 1,
+  //         objOfCoordinat[keyCountX][1]
+  //       )
+  //       if (newOY) {
+  //         objOfCoordinat[keyCountYNext] = newOY;
+  //         const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
+  //         tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
+  //       }
+  //     }
+  //     // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
+  //   }
+  //   // console.log('objOfCoordinat', objOfCoordinat)
+  //   // manageMe(tempMatrix, objOfCoordinat, col , numberOfCount+1)
+  //   // console.log('tempMatrix', tempMatrix)
+  // };
+
+
+  // функция для поиска НЕ первых непустых координат
+  // для верхнего уровня матрицы
+  const manageUp = function manageMe(
+    tempMatrix,
+    objOfCoordinat,
+    // key = 'X',
+    numberOfCount = 1,
+  ) {
+    // const currentCoordinatName =
+    //   getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    // const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    // const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const finishCell = tempMatrix[
+      objOfCoordinat[`OY${numberOfCount}`][0]
+    ][
+      objOfCoordinat[`OX${numberOfCount}`][1]
+    ]
+
+    // проверить есть ли завершающая координата
+    if (finishCell.x) {
+      // есть - значит надо добавить единицу, чтоб уровнять
+      // матрицу и завершить цикл
+      tempMatrix[
+        objOfCoordinat[`OY${numberOfCount}`][0]
+      ][
+        objOfCoordinat[`OX${numberOfCount}`][1]
+      ].x++
+      objOfCoordinat.finish = [
+        objOfCoordinat[`OY${numberOfCount}`][0],
+        objOfCoordinat[`OX${numberOfCount}`][1]
+      ]
+      console.log('tempMatrix END', tempMatrix)
+
+      return tempMatrix;
     }
     else {
-      if (objOfCoordinat[keyCountX][1] < objOfCoordinat.original[1]) {
 
-        // find new OX coordinate
-        objOfCoordinat[keyCountXNext] = getNewCoordinatePlus(
-          objOfCoordinat[keyCountX][1],
-          objOfCoordinat[keyCountY][1],
-          objOfCoordinat[keyCountY][0]
+      // нет - значит надо найти следующие коордианты,
+      // которые могут привести к появлянию финишной ячейки
+      if (numberOfCount % 2 !== 0) {
+        // \/ <-
+        // +1
+
+        // <-
+        // это для Y
+        const {
+          tempMatrix: newTempMatrixLeft,
+          objOfCoordinat: newObjOfCoordinatLeft
+        } = findLeftNotNullFurthest(
+          tempMatrix,
+          objOfCoordinat,
+          'Y',
+          numberOfCount,
+          '+',
         )
-        const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
-        tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+        tempMatrix = newTempMatrixLeft;
+        objOfCoordinat = newObjOfCoordinatLeft;
 
-        // find new OY coordinat
-        objOfCoordinat[keyCountYNext] = getNewCoordinateMinus(
-          objOfCoordinat[keyCountY][0],
-          objOfCoordinat[keyCountX][0],
-          objOfCoordinat[keyCountX][1]);
 
-        //           console.log(' OLD keyCountYNext', keyCountYNext)
-        // console.log(' OLD objOfCoordinat[keyCountYNext]',  objOfCoordinat[keyCountYNext])
 
-        //         findLeftNotNull(keyCountY, tempMatrix, objOfCoordinat, 'Y', 1)
-        const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
-        tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
+
+        // \/
+        // это для X
+        const {
+          tempMatrix: newTempMatrixBottom,
+          objOfCoordinat: newObjOfCoordinatBottom
+        } = findBottomNotNullFurthest(
+          tempMatrix,
+          objOfCoordinat,
+          'X',
+          numberOfCount,
+          '+'
+        )
+        tempMatrix = newTempMatrixBottom;
+        objOfCoordinat = newObjOfCoordinatBottom;
+        console.log('tempMatrix', tempMatrix)
+
+
       }
       else {
-        // console.log('objOfCoordinat[keyCountY]', objOfCoordinat[keyCountY])
-        objOfCoordinat[keyCountXNext] = getNewCoordinateMinus(
-          objOfCoordinat[keyCountX][1],
-          objOfCoordinat[keyCountY][1],
-          objOfCoordinat[keyCountY][0],
-          'bottom'
-        )
-        const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
-        tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
+        // 2 4 6 8...
+        // -> /\
+        //  -1
+        const {
+          tempMatrix: newTempMatrixRigth,
+          objOfCoordinat: newObjOfCoordinatRigth
+        } = findRigthNotNullNearest(
+          tempMatrix,
+          objOfCoordinat,
+          'X',
+          numberOfCount,
+        );
+        tempMatrix = newTempMatrixRigth;
+        objOfCoordinat = newObjOfCoordinatRigth;
 
-        // find new OY coordinat
-        const newOY = getNewCoordinateMinus(
-          objOfCoordinat[keyCountX][0] - 1,
-          objOfCoordinat[keyCountY][0] + 1,
-          objOfCoordinat[keyCountX][1]
-        )
-        if (newOY) {
-          objOfCoordinat[keyCountYNext] = newOY;
-          const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
-          tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-        }
+        // ищем ближайщую НЕпустую клетку сверху
+        // тк у нас нет впереди значений, то поиск по оси ОУ будет вверх
+        const {
+          tempMatrix: newTempMatrixTop,
+          objOfCoordinat: newObjOfCoordinatTop,
+        } = findTopNotNullNearest(
+          tempMatrix,
+          objOfCoordinat,
+          'Y',
+          numberOfCount
+        );
+        tempMatrix = newTempMatrixTop;
+        objOfCoordinat = newObjOfCoordinatTop;
+
+
+
       }
-      // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
+      // manageMe(tempMatrix, objOfCoordinat, numberOfCount + 1)
     }
-    // console.log('objOfCoordinat', objOfCoordinat)
-    // manageMe(tempMatrix, objOfCoordinat, col , numberOfCount+1)
-    // console.log('tempMatrix', tempMatrix)
   };
-
 
   const kek = () => {
     // let findCol = null;
@@ -328,7 +516,7 @@ const SteppingStoneCount = (props) => {
             const {
               tempMatrix: newTempMatrixLeft,
               objOfCoordinat: newObjOfCoordinatLeft
-            } = findLeftNotNull(
+            } = findLeftNotNullNearest(
               tempMatrix,
               objOfCoordinat,
             )
@@ -339,12 +527,14 @@ const SteppingStoneCount = (props) => {
             const {
               tempMatrix: newTempMatrixBottom,
               objOfCoordinat: newObjOfCoordinatBottom
-            } = findBottomNotNull(
+            } = findBottomNotNullNearest(
               tempMatrix,
               objOfCoordinat,
             )
             tempMatrix = newTempMatrixBottom;
             objOfCoordinat = newObjOfCoordinatBottom;
+
+            manageUp(tempMatrix, objOfCoordinat)
           }
           else {
             // ДЛЯ НИЖНЕГО УРОВНЯ МАТРИЦЫ
@@ -353,7 +543,7 @@ const SteppingStoneCount = (props) => {
             const {
               tempMatrix: newTempMatrixRigth,
               objOfCoordinat: newObjOfCoordinatRigth
-            } = findRigthNotNull(
+            } = findRigthNotNullNearest(
               tempMatrix,
               objOfCoordinat
             );
@@ -365,7 +555,7 @@ const SteppingStoneCount = (props) => {
             const {
               tempMatrix: newTempMatrixTop,
               objOfCoordinat: newObjOfCoordinatTop
-            } = findTopNotNull(
+            } = findTopNotNullNearest(
               tempMatrix,
               objOfCoordinat
             );
@@ -374,7 +564,7 @@ const SteppingStoneCount = (props) => {
           }
 
           // replace manage();
-          manage(tempMatrix, objOfCoordinat)
+          // manage(tempMatrix, objOfCoordinat)
           // console.log('#######', newMatrix, '#######')
           // if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
           //   tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x++;
