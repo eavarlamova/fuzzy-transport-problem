@@ -16,7 +16,7 @@ const SteppingStoneCount = (props) => {
       'original'
   )
   // функция для поиска непустых ячеек слева(не нулевых Х) 
-  // поиск  20 <---- 0
+  // поиск  20 <=== 0
   const findLeftNotNull = (
     tempMatrix,
     objOfCoordinat,
@@ -78,8 +78,66 @@ const SteppingStoneCount = (props) => {
     }
   };
 
+  // функция для поиска непустых ячеек справа (не нулевых Х)
+  // 0 ===> 20
+  const findRigthNotNull = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'X', // X по умолчанию, тк первое использование
+    //            приходится на поиск ненулевого X по оси OX
+    //            для нижних нулевых значений матрицы
+    //            т.е. первой проходки от 0
+    numberOfCount = 0,
+  ) => {
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+    const colLength = tempMatrix[0].length;
+
+    for (let rigthCol = row + 1; rigthCol < colLength; rigthCol++) {
+      if (matrix[row][rigthCol].x) {
+        // тут будет корректировака со знаком
+        tempMatrix[row][rigthCol].x--;
+        objOfCoordinat[nextCoordinatName] = [row, rigthCol];
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  };
+
+  // функция для поиска непустых ячеек сверху (не нулевых Х)
+  //    20
+  //    /\
+  //   /||\
+  //    ||
+  //    0
+  const findTopNotNull = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'Y', // Y по умолчанию, тк первое использование
+    //            приходится на поиск ненулевого X по оси OY
+    //            для нижних нулевых значений матрицы
+    //            т.е. первой проходки от 0
+    numberOfCount = 0,
+  ) => {
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+
+    for (let topRow = row - 1; topRow >= 0; topRow--) {
+      if (matrix[topRow][col].x) {
+        // тут будет корректировака со знаком
+        tempMatrix[topRow][col].x--;
+        objOfCoordinat[nextCoordinatName] = [topRow, col];
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  };
   const getNewCoordinatePlus = function (start, end, index, from = 'top') {
-    console.log('start, end, index', start, end, index)
+    // console.log('start, end, index', start, end, index)
     for (
       let newCoordinate = start;
       newCoordinate < end;
@@ -277,7 +335,7 @@ const SteppingStoneCount = (props) => {
             tempMatrix = newTempMatrixLeft;
             objOfCoordinat = newObjOfCoordinatLeft;
 
-            // ищем ближайщую НЕпустую клетку снмизу
+            // ищем ближайщую НЕпустую клетку снизу
             const {
               tempMatrix: newTempMatrixBottom,
               objOfCoordinat: newObjOfCoordinatBottom
@@ -289,25 +347,30 @@ const SteppingStoneCount = (props) => {
             objOfCoordinat = newObjOfCoordinatBottom;
           }
           else {
-            // ищем слева, тк нет справа никаких заполненных не 0 x
-            for (let rigthCol = col + 1; rigthCol < colCount; rigthCol++) {
-              if (matrix[row][rigthCol].x !== 0) {
-                tempMatrix[row][rigthCol].x--;
-                // indexOX = rigthCol;
-                objOfCoordinat.OX1 = [row, rigthCol];
-                break;
-              }
-            }
+            // ДЛЯ НИЖНЕГО УРОВНЯ МАТРИЦЫ
+            // ищем ближайщую НЕпустую клетку справа
+            // тк нет справа никаких заполненных не 0 x
+            const {
+              tempMatrix: newTempMatrixRigth,
+              objOfCoordinat: newObjOfCoordinatRigth
+            } = findRigthNotNull(
+              tempMatrix,
+              objOfCoordinat
+            );
+            tempMatrix = newTempMatrixRigth;
+            objOfCoordinat = newObjOfCoordinatRigth;
 
+            // ищем ближайщую НЕпустую клетку сверху
             // тк у нас нет впереди значений, то поиск по оси ОУ будет вверх
-            for (let topRow = row - 1; topRow >= 0; topRow--) {
-              if (matrix[topRow][col].x) {
-                tempMatrix[topRow][col].x--;
-                // indexOY = topRow;
-                objOfCoordinat.OY1 = [topRow, col];
-                break;
-              }
-            }
+            const {
+              tempMatrix: newTempMatrixTop,
+              objOfCoordinat: newObjOfCoordinatTop
+            } = findTopNotNull(
+              tempMatrix,
+              objOfCoordinat
+            );
+            tempMatrix = newTempMatrixTop;
+            objOfCoordinat = newObjOfCoordinatTop;
           }
 
           // replace manage();
