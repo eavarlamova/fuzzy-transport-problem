@@ -69,9 +69,9 @@ const SteppingStoneCount = (props) => {
     const [row, col] = currentCellCoordinate;
 
     for (let leftCol = 0; leftCol < col; leftCol++) {
-      if (matrix[row][leftCol].x ) {
+      if (matrix[row][leftCol].x) {
         // тут будет корректировака со знаком
-          tempMatrix[row][leftCol].x++;
+        tempMatrix[row][leftCol].x++;
         objOfCoordinat[nextCoordinatName] = [row, leftCol];
         // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
         // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
@@ -106,12 +106,12 @@ const SteppingStoneCount = (props) => {
     for (let bottomRow = row + 1; bottomRow < rowLength; bottomRow++) {
       if (matrix[bottomRow][col].x) {
         // тут будет корректировака со знаком
-        if (mathSign === '-') {
-          tempMatrix[bottomRow][col].x--;
-        }
-        else {
-          tempMatrix[bottomRow][col].x++;
-        }
+        // if (mathSign === '-') {
+        tempMatrix[bottomRow][col].x--;
+        // }
+        // else {
+        // tempMatrix[bottomRow][col].x++;
+        // }
         objOfCoordinat[nextCoordinatName] = [bottomRow, col];
         return { tempMatrix, objOfCoordinat };
       }
@@ -137,7 +137,7 @@ const SteppingStoneCount = (props) => {
     const [row, col] = currentCellCoordinate;
     const rowLength = tempMatrix.length;
 
-    for (let bottomRow = rowLength-1; bottomRow > row; bottomRow--) {
+    for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
 
       if (matrix[bottomRow][col].x) {
         // тут будет корректировака со знаком
@@ -177,6 +177,33 @@ const SteppingStoneCount = (props) => {
     }
   };
 
+
+  const findRigthNotNullFurthest = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'X', // X по умолчанию, тк первое использование
+    //            приходится на поиск ненулевого X по оси OX
+    //            для нижних нулевых значений матрицы
+    //            т.е. первой проходки от 0
+    numberOfCount = 0,
+  ) => {
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+    const colLength = tempMatrix[0].length;
+
+    for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
+      if (matrix[row][rigthCol].x) {
+        // тут будет корректировака со знаком
+        tempMatrix[row][rigthCol].x++;
+        objOfCoordinat[nextCoordinatName] = [row, rigthCol];
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  };
+
   // функция для поиска непустых ячеек сверху (не нулевых Х)
   //    20
   //    /\
@@ -207,6 +234,32 @@ const SteppingStoneCount = (props) => {
       }
     }
   };
+  const findTopNotNullFurthest = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'Y', // Y по умолчанию, тк первое использование
+    //            приходится на поиск ненулевого X по оси OY
+    //            для нижних нулевых значений матрицы
+    //            т.е. первой проходки от 0
+    numberOfCount = 0,
+  ) => {
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+
+    for (let topRow = 0; topRow < row; topRow++) {
+      if (matrix[topRow][col].x) {
+        // тут будет корректировака со знаком
+        tempMatrix[topRow][col].x--;
+        objOfCoordinat[nextCoordinatName] = [topRow, col];
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  };
+
+
   const getNewCoordinatePlus = function (start, end, index, from = 'top') {
     // console.log('start, end, index', start, end, index)
     for (
@@ -390,19 +443,38 @@ const SteppingStoneCount = (props) => {
 
     // проверить есть ли завершающая координата
     if (finishCell.x) {
+      console.log('finishCell', finishCell)
       // есть - значит надо добавить единицу, чтоб уровнять
       // матрицу и завершить цикл
+      // условие - добавлять или вычитать 1
+      const col = objOfCoordinat[`OX${numberOfCount}`][1];
+      // console.log('numberOfCount', numberOfCount)
+      let valueInCol = tempMatrix.reduce((acc, item) => (
+        acc = acc + item[col].x
+      ), 0)
+      // valueInCol сложить со всеми остальными в колонке
+      const firstValueInCol = Number(points.destination[col].quality)
+      const correctValue = valueInCol > firstValueInCol ?
+        -1 :
+        +1;
+
+      // console.log('valueInCol', valueInCol)
+      // console.log('valueInCol', valueInCol)
       tempMatrix[
         objOfCoordinat[`OY${numberOfCount}`][0]
       ][
         objOfCoordinat[`OX${numberOfCount}`][1]
-      ].x++
+      ].x = tempMatrix[
+        objOfCoordinat[`OY${numberOfCount}`][0]
+      ][
+        objOfCoordinat[`OX${numberOfCount}`][1]
+      ].x + correctValue
       objOfCoordinat.finish = [
         objOfCoordinat[`OY${numberOfCount}`][0],
         objOfCoordinat[`OX${numberOfCount}`][1]
       ]
+      console.log('objOfCoordinat', objOfCoordinat)
       console.log('tempMatrix END', tempMatrix)
-
       return tempMatrix;
     }
     else {
@@ -445,7 +517,7 @@ const SteppingStoneCount = (props) => {
         )
         tempMatrix = newTempMatrixBottom;
         objOfCoordinat = newObjOfCoordinatBottom;
-        console.log('tempMatrix', tempMatrix)
+        // console.log('tempMatrix', tempMatrix)
 
 
       }
@@ -456,7 +528,7 @@ const SteppingStoneCount = (props) => {
         const {
           tempMatrix: newTempMatrixRigth,
           objOfCoordinat: newObjOfCoordinatRigth
-        } = findRigthNotNullNearest(
+        } = findRigthNotNullFurthest(
           tempMatrix,
           objOfCoordinat,
           'X',
@@ -470,7 +542,7 @@ const SteppingStoneCount = (props) => {
         const {
           tempMatrix: newTempMatrixTop,
           objOfCoordinat: newObjOfCoordinatTop,
-        } = findTopNotNullNearest(
+        } = findTopNotNullFurthest(
           tempMatrix,
           objOfCoordinat,
           'Y',
@@ -482,8 +554,9 @@ const SteppingStoneCount = (props) => {
 
 
       }
-      // manageMe(tempMatrix, objOfCoordinat, numberOfCount + 1)
+      manageMe(tempMatrix, objOfCoordinat, numberOfCount + 1)
     }
+    // console.log('tempMatrix', tempMatrix)
   };
 
   const kek = () => {
