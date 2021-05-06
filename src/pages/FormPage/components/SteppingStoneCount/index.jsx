@@ -259,6 +259,31 @@ const SteppingStoneCount = (props) => {
     }
   };
 
+  const checkMatrix = (tempMatrix) => {
+    // пройти по всем строкам 
+    const sumRow = tempMatrix.map((row) => {
+      return row.reduce((acc, col) => {
+        return acc = acc + Number(col.x)
+      }, 0)
+    })
+    const checkRow = sumRow.every((item, index) => {
+      console.log('item', item)
+      console.log('points.departure[index].quality)', Number(points.departure[index].quality))
+      return (item === Number(points.departure[index].quality))
+    });
+
+    const sumCol = tempMatrix[0].map((col, index) => (
+      tempMatrix.reduce((acc, row) => (
+        acc = acc + row[index].x
+      ), 0)
+    ))
+    const checkCol = sumCol.every((item,index)=>(
+      item === Number(points.destination[index].quality)
+      ))
+console.log('#######', tempMatrix, '#######')
+console.log('==========checkRow', checkRow)   
+//  console.log('chckCol', checkCol)
+  };
 
   const getNewCoordinatePlus = function (start, end, index, from = 'top') {
     // console.log('start, end, index', start, end, index)
@@ -443,7 +468,6 @@ const SteppingStoneCount = (props) => {
 
     // проверить есть ли завершающая координата
     if (finishCell.x) {
-      console.log('finishCell', finishCell)
       // есть - значит надо добавить единицу, чтоб уровнять
       // матрицу и завершить цикл
       // условие - добавлять или вычитать 1
@@ -454,9 +478,14 @@ const SteppingStoneCount = (props) => {
       ), 0)
       // valueInCol сложить со всеми остальными в колонке
       const firstValueInCol = Number(points.destination[col].quality)
+    
       const correctValue = valueInCol > firstValueInCol ?
-        -1 :
-        +1;
+      -1 :
+      +1;
+      // console.log('valueInCol', valueInCol)
+      // console.log('firstValueInCol', firstValueInCol)
+      // console.log('valueInCol > firstValueInCol', valueInCol > firstValueInCol)
+      // console.log('correctValue', correctValue) 
 
       // console.log('valueInCol', valueInCol)
       // console.log('valueInCol', valueInCol)
@@ -473,8 +502,7 @@ const SteppingStoneCount = (props) => {
         objOfCoordinat[`OY${numberOfCount}`][0],
         objOfCoordinat[`OX${numberOfCount}`][1]
       ]
-      console.log('objOfCoordinat', objOfCoordinat)
-      console.log('tempMatrix END', tempMatrix)
+      checkMatrix(tempMatrix)
       return tempMatrix;
     }
     else {
