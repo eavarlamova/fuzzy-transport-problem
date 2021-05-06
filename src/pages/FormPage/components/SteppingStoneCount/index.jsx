@@ -8,8 +8,78 @@ const SteppingStoneCount = (props) => {
   } = props;
 
   const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
+  const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
+    numberOfCount
+      ?
+      `O${key}${numberOfCount}`
+      :
+      'original'
+  )
+  // функция для поиска непустых ячеек слева(не нулевых Х) 
+  // поиск  20 <---- 0
+  const findLeftNotNull = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'X',  // X по умолчанию, тк первое использование
+    //             приходится на поиск ненулевого X по оси OX
+    //             для верхних нулевых значений матрицы
+    //             т.е. первой проходки от 0
+    numberOfCount = 0,
+  ) => {
+    // currentCell - координата текущей ячейки
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+
+    for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
+      if (matrix[row][leftCol].x !== 0) {
+        // тут будет корректировака со знаком
+        tempMatrix[row][leftCol].x--;
+        objOfCoordinat[nextCoordinatName] = [row, leftCol];
+        // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
+        // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  }
+
+  // функция для поиска непустых ячеек снизу (не нулевых Х)
+  //  0
+  //  ||
+  // \||/
+  //  \/
+  //  20
+  const findBottomNotNull = (
+    tempMatrix,
+    objOfCoordinat,
+    key = 'Y', // Y по умолчанию, тк первое использование
+    //            приходится на поиск ненулевого X по оси OY
+    //            для верхних нулевых значений матрицы
+    // =          т.е. первой проходки от 0
+    numberOfCount = 0,
+  ) => {
+    const currentCoordinatName =
+      getCorrectKeyForObjOfCoordinat(key, numberOfCount)
+
+    const nextCoordinatName = `O${key}${numberOfCount + 1}`;
+    const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
+    const [row, col] = currentCellCoordinate;
+    const rowLength = tempMatrix.length;
+
+    for (let bottomRow = row + 1; bottomRow < rowLength; bottomRow++) {
+      if (matrix[bottomRow][col].x) {
+        // тут будет корректировака со знаком
+        tempMatrix[bottomRow][col].x--;
+        objOfCoordinat[nextCoordinatName] = [bottomRow, col];
+        return { tempMatrix, objOfCoordinat };
+      }
+    }
+  };
 
   const getNewCoordinatePlus = function (start, end, index, from = 'top') {
+    console.log('start, end, index', start, end, index)
     for (
       let newCoordinate = start;
       newCoordinate < end;
@@ -28,6 +98,7 @@ const SteppingStoneCount = (props) => {
       // const OXSecondCoordinate = matrix[index][newCoordinate];
       if (cell.x) {
         // наша вторая координата OX
+        // console.log('cordinateArray!!!', cordinateArray)
         return cordinateArray;
       }
     }
@@ -101,16 +172,20 @@ const SteppingStoneCount = (props) => {
 
   //   console.log('tempMatrix', tempMatrix)
   //  };
-  const manage = function manageMe(tempMatrix, objOfCoordinat, col, numberOfCount = 1) {
-    const keyCountX = `OX${numberOfCount}`;
-    const keyCountY = `OY${numberOfCount}`;
-    const keyCountXNext = `OX${numberOfCount + 1}`
-    const keyCountYNext = `OY${numberOfCount + 1}`
+  const manage = function manageMe(tempMatrix, objOfCoordinat, numberOfCount = 1) {
+    let keyCountX = `OX${numberOfCount}`;
+    let keyCountY = `OY${numberOfCount}`;
+    let keyCountXNext = `OX${numberOfCount + 1}`
+    let keyCountYNext = `OY${numberOfCount + 1}`
+    // console.log('keyCountY', keyCountY)
     if (tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x) {
       tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x++;
+      // return tempMatrix; 
+      objOfCoordinat.finish = [objOfCoordinat[keyCountY][0], objOfCoordinat[keyCountX][1]]
+      return;
     }
     else {
-      if (objOfCoordinat[keyCountX][1] < col) {
+      if (objOfCoordinat[keyCountX][1] < objOfCoordinat.original[1]) {
 
         // find new OX coordinate
         objOfCoordinat[keyCountXNext] = getNewCoordinatePlus(
@@ -126,10 +201,16 @@ const SteppingStoneCount = (props) => {
           objOfCoordinat[keyCountY][0],
           objOfCoordinat[keyCountX][0],
           objOfCoordinat[keyCountX][1]);
+
+        //           console.log(' OLD keyCountYNext', keyCountYNext)
+        // console.log(' OLD objOfCoordinat[keyCountYNext]',  objOfCoordinat[keyCountYNext])
+
+        //         findLeftNotNull(keyCountY, tempMatrix, objOfCoordinat, 'Y', 1)
         const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
         tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
       }
       else {
+        // console.log('objOfCoordinat[keyCountY]', objOfCoordinat[keyCountY])
         objOfCoordinat[keyCountXNext] = getNewCoordinateMinus(
           objOfCoordinat[keyCountX][1],
           objOfCoordinat[keyCountY][1],
@@ -153,8 +234,9 @@ const SteppingStoneCount = (props) => {
       }
       // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
     }
-
-    console.log('tempMatrix', tempMatrix)
+    // console.log('objOfCoordinat', objOfCoordinat)
+    // manageMe(tempMatrix, objOfCoordinat, col , numberOfCount+1)
+    // console.log('tempMatrix', tempMatrix)
   };
 
 
@@ -175,31 +257,36 @@ const SteppingStoneCount = (props) => {
 
         // let indexOX = null;
         // let indexOY = null;
-        const objOfCoordinat = {};
+        let objOfCoordinat = {};
         if (currentCell.x === 0) {
           // мы нашли пустую клетку
           tempMatrix[row][col].x = 1;
           objOfCoordinat.original = [row, col];
-          // ПОИСК БОКОВЫХ НЕПУСТЫХ ГРАНИЦ
-          if (haveFullX) {
-            // ищем ближайщую НЕпустую клетку справа
-            for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
-              if (matrix[row][leftCol].x !== 0) {
-                tempMatrix[row][leftCol].x--;
-                // indexOX = leftCol;
-                objOfCoordinat.OX1 = [row, leftCol];
-                break;
-              }
-            }
 
-            for (let bottomRow = row + 1; bottomRow < rowCount; bottomRow++) {
-              if (matrix[bottomRow][col].x) {
-                tempMatrix[bottomRow][col].x--;
-                // indexOY = bottomRow;
-                objOfCoordinat.OY1 = [bottomRow, col];
-                break;
-              }
-            }
+          // ПОИСКА НЕПУСТЫХ ГРАНИЦ
+          if (haveFullX) {
+            // ДЛЯ ВЕРХНЕГО УРОВНЯ МАТРИЦЫ 
+            // ищем ближайщую НЕпустую клетку слева
+            const {
+              tempMatrix: newTempMatrixLeft,
+              objOfCoordinat: newObjOfCoordinatLeft
+            } = findLeftNotNull(
+              tempMatrix,
+              objOfCoordinat,
+            )
+            tempMatrix = newTempMatrixLeft;
+            objOfCoordinat = newObjOfCoordinatLeft;
+
+            // ищем ближайщую НЕпустую клетку снмизу
+            const {
+              tempMatrix: newTempMatrixBottom,
+              objOfCoordinat: newObjOfCoordinatBottom
+            } = findBottomNotNull(
+              tempMatrix,
+              objOfCoordinat,
+            )
+            tempMatrix = newTempMatrixBottom;
+            objOfCoordinat = newObjOfCoordinatBottom;
           }
           else {
             // ищем слева, тк нет справа никаких заполненных не 0 x
@@ -224,7 +311,8 @@ const SteppingStoneCount = (props) => {
           }
 
           // replace manage();
-          manage(tempMatrix, objOfCoordinat, col)
+          manage(tempMatrix, objOfCoordinat)
+          // console.log('#######', newMatrix, '#######')
           // if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
           //   tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x++;
           // }
