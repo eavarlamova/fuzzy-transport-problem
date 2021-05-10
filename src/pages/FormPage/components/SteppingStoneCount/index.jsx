@@ -197,7 +197,7 @@ const SteppingStoneCount = (props) => {
     for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
       if (matrix[row][rigthCol].x) {
         // тут будет корректировака со знаком
-        tempMatrix[row][rigthCol].x++;
+        tempMatrix[row][rigthCol].x--;
         objOfCoordinat[nextCoordinatName] = [row, rigthCol];
         return { tempMatrix, objOfCoordinat };
       }
@@ -281,8 +281,9 @@ const SteppingStoneCount = (props) => {
       item === Number(points.destination[index].quality)
       ))
 console.log('#######', tempMatrix, '#######')
-console.log('==========checkRow', checkRow)   
-//  console.log('chckCol', checkCol)
+// console.log('==========checkRow', checkRow)   
+console.log('============chckCol', checkCol)
+return checkRow
   };
 
   const getNewCoordinatePlus = function (start, end, index, from = 'top') {
@@ -493,16 +494,18 @@ console.log('==========checkRow', checkRow)
         objOfCoordinat[`OY${numberOfCount}`][0]
       ][
         objOfCoordinat[`OX${numberOfCount}`][1]
-      ].x = tempMatrix[
+      ].x += correctValue
+      let a = tempMatrix[
         objOfCoordinat[`OY${numberOfCount}`][0]
       ][
         objOfCoordinat[`OX${numberOfCount}`][1]
-      ].x + correctValue
+      ].x
       objOfCoordinat.finish = [
         objOfCoordinat[`OY${numberOfCount}`][0],
         objOfCoordinat[`OX${numberOfCount}`][1]
       ]
-      checkMatrix(tempMatrix)
+      const r = checkMatrix(tempMatrix, a)
+      console.log(r)
       return tempMatrix;
     }
     else {
