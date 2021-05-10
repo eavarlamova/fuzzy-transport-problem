@@ -267,8 +267,6 @@ const SteppingStoneCount = (props) => {
       }, 0)
     })
     const checkRow = sumRow.every((item, index) => {
-      console.log('item', item)
-      console.log('points.departure[index].quality)', Number(points.departure[index].quality))
       return (item === Number(points.departure[index].quality))
     });
 
@@ -277,64 +275,62 @@ const SteppingStoneCount = (props) => {
         acc = acc + row[index].x
       ), 0)
     ))
-    const checkCol = sumCol.every((item,index)=>(
+    const checkCol = sumCol.every((item, index) => (
       item === Number(points.destination[index].quality)
-      ))
-console.log('#######', tempMatrix, '#######')
-// console.log('==========checkRow', checkRow)   
-console.log('============chckCol', checkCol)
-return checkRow
+    ))
+    if (!checkCol && checkRow) console.error('НЕ ПРОШЛО ПРОВЕРКУ')
+    // return checkRow
   };
 
-  const getNewCoordinatePlus = function (start, end, index, from = 'top') {
-    // console.log('start, end, index', start, end, index)
-    for (
-      let newCoordinate = start;
-      newCoordinate < end;
-      newCoordinate++
-    ) {
-      let cell = {};
-      let cordinateArray = [];
-      if (from === 'top') {
-        cell = matrix[index][newCoordinate]
-        cordinateArray = [index, newCoordinate]
-      }
-      else if (from === 'bottom') {
-        cell = matrix[newCoordinate][index]
-        cordinateArray = [newCoordinate, index]
-      }
-      // const OXSecondCoordinate = matrix[index][newCoordinate];
-      if (cell.x) {
-        // наша вторая координата OX
-        // console.log('cordinateArray!!!', cordinateArray)
-        return cordinateArray;
-      }
-    }
-  }
+  // const getNewCoordinatePlus = function (start, end, index, from = 'top') {
+  //   // console.log('start, end, index', start, end, index)
+  //   for (
+  //     let newCoordinate = start;
+  //     newCoordinate < end;
+  //     newCoordinate++
+  //   ) {
+  //     let cell = {};
+  //     let cordinateArray = [];
+  //     if (from === 'top') {
+  //       cell = matrix[index][newCoordinate]
+  //       cordinateArray = [index, newCoordinate]
+  //     }
+  //     else if (from === 'bottom') {
+  //       cell = matrix[newCoordinate][index]
+  //       cordinateArray = [newCoordinate, index]
+  //     }
+  //     // const OXSecondCoordinate = matrix[index][newCoordinate];
+  //     if (cell.x) {
+  //       // наша вторая координата OX
+  //       // console.log('cordinateArray!!!', cordinateArray)
+  //       return cordinateArray;
+  //     }
+  //   }
+  // }
 
-  const getNewCoordinateMinus = (start, end, index, from = 'top') => {
-    //  если top, то определяется OY, возвращается [newCoordinate, col]
-    //  если bottom, то OX, возвращается [row, newCoordinate] 
-    for (
-      let newCoordinate = start;
-      newCoordinate > end;
-      newCoordinate--
-    ) {
-      let cell = {};
-      let cordinateArray = [];
-      if (from === 'top') {
-        cell = matrix[newCoordinate][index]
-        cordinateArray = [newCoordinate, index]
-      }
-      else if (from === 'bottom') {
-        cell = matrix[index][newCoordinate]
-        cordinateArray = [index, newCoordinate]
-      }
-      if (cell.x) {
-        return cordinateArray;
-      }
-    }
-  };
+  // const getNewCoordinateMinus = (start, end, index, from = 'top') => {
+  //   //  если top, то определяется OY, возвращается [newCoordinate, col]
+  //   //  если bottom, то OX, возвращается [row, newCoordinate] 
+  //   for (
+  //     let newCoordinate = start;
+  //     newCoordinate > end;
+  //     newCoordinate--
+  //   ) {
+  //     let cell = {};
+  //     let cordinateArray = [];
+  //     if (from === 'top') {
+  //       cell = matrix[newCoordinate][index]
+  //       cordinateArray = [newCoordinate, index]
+  //     }
+  //     else if (from === 'bottom') {
+  //       cell = matrix[index][newCoordinate]
+  //       cordinateArray = [index, newCoordinate]
+  //     }
+  //     if (cell.x) {
+  //       return cordinateArray;
+  //     }
+  //   }
+  // };
 
   // const manage = function manageMe(tempMatrix, objOfCoordinat, col) {
   //   if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
@@ -451,16 +447,12 @@ return checkRow
 
   // функция для поиска НЕ первых непустых координат
   // для верхнего уровня матрицы
+
   const manageUp = function manageMe(
     tempMatrix,
     objOfCoordinat,
-    // key = 'X',
     numberOfCount = 1,
   ) {
-    // const currentCoordinatName =
-    //   getCorrectKeyForObjOfCoordinat(key, numberOfCount)
-    // const nextCoordinatName = `O${key}${numberOfCount + 1}`;
-    // const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const finishCell = tempMatrix[
       objOfCoordinat[`OY${numberOfCount}`][0]
     ][
@@ -473,39 +465,27 @@ return checkRow
       // матрицу и завершить цикл
       // условие - добавлять или вычитать 1
       const col = objOfCoordinat[`OX${numberOfCount}`][1];
-      // console.log('numberOfCount', numberOfCount)
       let valueInCol = tempMatrix.reduce((acc, item) => (
         acc = acc + item[col].x
       ), 0)
       // valueInCol сложить со всеми остальными в колонке
       const firstValueInCol = Number(points.destination[col].quality)
-    
-      const correctValue = valueInCol > firstValueInCol ?
-      -1 :
-      +1;
-      // console.log('valueInCol', valueInCol)
-      // console.log('firstValueInCol', firstValueInCol)
-      // console.log('valueInCol > firstValueInCol', valueInCol > firstValueInCol)
-      // console.log('correctValue', correctValue) 
 
-      // console.log('valueInCol', valueInCol)
-      // console.log('valueInCol', valueInCol)
+      const correctValue = valueInCol > firstValueInCol ?
+        -1 :
+        +1;
+
       tempMatrix[
         objOfCoordinat[`OY${numberOfCount}`][0]
       ][
         objOfCoordinat[`OX${numberOfCount}`][1]
       ].x += correctValue
-      let a = tempMatrix[
-        objOfCoordinat[`OY${numberOfCount}`][0]
-      ][
-        objOfCoordinat[`OX${numberOfCount}`][1]
-      ].x
+
       objOfCoordinat.finish = [
         objOfCoordinat[`OY${numberOfCount}`][0],
         objOfCoordinat[`OX${numberOfCount}`][1]
       ]
-      const r = checkMatrix(tempMatrix, a)
-      console.log(r)
+      checkMatrix(tempMatrix)
       return tempMatrix;
     }
     else {
@@ -581,18 +561,54 @@ return checkRow
         );
         tempMatrix = newTempMatrixTop;
         objOfCoordinat = newObjOfCoordinatTop;
-
-
-
       }
       manageMe(tempMatrix, objOfCoordinat, numberOfCount + 1)
     }
-    // console.log('tempMatrix', tempMatrix)
+  };
+
+  const manageDown = function manageMe(
+    tempMatrix,
+    objOfCoordinat,
+    numberOfCount = 1,
+  ) {
+    const finishCell = tempMatrix[
+      objOfCoordinat[`OY${numberOfCount}`][0]
+    ][
+      objOfCoordinat[`OX${numberOfCount}`][1]
+    ]
+    if (finishCell.x) {
+      // есть - значит надо добавить единицу, чтоб уровнять
+      // матрицу и завершить цикл
+      // условие - добавлять или вычитать 1
+      const col = objOfCoordinat[`OX${numberOfCount}`][1];
+      let valueInCol = tempMatrix.reduce((acc, item) => (
+        acc = acc + item[col].x
+      ), 0)
+      // valueInCol сложить со всеми остальными в колонке
+      const firstValueInCol = Number(points.destination[col].quality)
+
+      const correctValue = valueInCol > firstValueInCol ?
+        -1 :
+        +1;
+
+      tempMatrix[
+        objOfCoordinat[`OY${numberOfCount}`][0]
+      ][
+        objOfCoordinat[`OX${numberOfCount}`][1]
+      ].x += correctValue
+
+      objOfCoordinat.finish = [
+        objOfCoordinat[`OY${numberOfCount}`][0],
+        objOfCoordinat[`OX${numberOfCount}`][1]
+      ]
+
+      console.log('!!!tempMatrix', tempMatrix)
+      checkMatrix(tempMatrix)
+      return tempMatrix;
+    }
   };
 
   const kek = () => {
-    // let findCol = null;
-
     const rowCount = matrix.length;
     const colCount = matrix[0].length;
 
@@ -665,8 +681,10 @@ return checkRow
             );
             tempMatrix = newTempMatrixTop;
             objOfCoordinat = newObjOfCoordinatTop;
-          }
 
+
+            manageDown(tempMatrix, objOfCoordinat);
+          }
           // replace manage();
           // manage(tempMatrix, objOfCoordinat)
           // console.log('#######', newMatrix, '#######')
