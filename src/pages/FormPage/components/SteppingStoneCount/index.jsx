@@ -59,7 +59,7 @@ const SteppingStoneCount = (props) => {
     //             для верхних нулевых значений матрицы
     //             т.е. первой проходки от 0
     numberOfCount = 0,
-    mathSigh = '-'
+    mathSigh = '+'
   ) => {
     // currentCell - координата текущей ячейки
     const currentCoordinatName =
@@ -71,7 +71,12 @@ const SteppingStoneCount = (props) => {
     for (let leftCol = 0; leftCol < col; leftCol++) {
       if (matrix[row][leftCol].x) {
         // тут будет корректировака со знаком
-        tempMatrix[row][leftCol].x++;
+        if(mathSigh === '+'){
+          tempMatrix[row][leftCol].x++;
+        }
+        else if (mathSigh === '-'){
+          tempMatrix[row][leftCol].x--;
+        }
         objOfCoordinat[nextCoordinatName] = [row, leftCol];
         // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
         // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
@@ -127,7 +132,7 @@ const SteppingStoneCount = (props) => {
     //            для верхних нулевых значений матрицы
     // =          т.е. второй проходки от 0
     numberOfCount = 0,
-    // mathSign = '-',
+    mathSign = '+',
   ) => {
     const currentCoordinatName =
       getCorrectKeyForObjOfCoordinat(key, numberOfCount)
@@ -141,7 +146,12 @@ const SteppingStoneCount = (props) => {
 
       if (matrix[bottomRow][col].x) {
         // тут будет корректировака со знаком
-        tempMatrix[bottomRow][col].x++;
+        if ( mathSign === '+'){
+          tempMatrix[bottomRow][col].x++;
+        }
+        else if(  mathSign ===  '-') {
+          tempMatrix[bottomRow][col].x--;
+        }
 
         objOfCoordinat[nextCoordinatName] = [bottomRow, col];
         return { tempMatrix, objOfCoordinat };
@@ -186,6 +196,7 @@ const SteppingStoneCount = (props) => {
     //            для нижних нулевых значений матрицы
     //            т.е. первой проходки от 0
     numberOfCount = 0,
+    mathSign = '-',
   ) => {
     const currentCoordinatName =
       getCorrectKeyForObjOfCoordinat(key, numberOfCount)
@@ -197,7 +208,12 @@ const SteppingStoneCount = (props) => {
     for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
       if (matrix[row][rigthCol].x) {
         // тут будет корректировака со знаком
-        tempMatrix[row][rigthCol].x--;
+        if (mathSign === '-') {
+          tempMatrix[row][rigthCol].x--;
+        }
+        else if (mathSign === '+') {
+          tempMatrix[row][rigthCol].x++;
+        }
         objOfCoordinat[nextCoordinatName] = [row, rigthCol];
         return { tempMatrix, objOfCoordinat };
       }
@@ -242,6 +258,7 @@ const SteppingStoneCount = (props) => {
     //            для нижних нулевых значений матрицы
     //            т.е. первой проходки от 0
     numberOfCount = 0,
+    mathSigh = '-',
   ) => {
     const currentCoordinatName =
       getCorrectKeyForObjOfCoordinat(key, numberOfCount)
@@ -252,7 +269,12 @@ const SteppingStoneCount = (props) => {
     for (let topRow = 0; topRow < row; topRow++) {
       if (matrix[topRow][col].x) {
         // тут будет корректировака со знаком
-        tempMatrix[topRow][col].x--;
+        if (mathSigh === '-') {
+          tempMatrix[topRow][col].x--;
+        }
+        else if (mathSigh === '+') {
+          tempMatrix[topRow][col].x++;
+        }
         objOfCoordinat[nextCoordinatName] = [topRow, col];
         return { tempMatrix, objOfCoordinat };
       }
@@ -278,7 +300,8 @@ const SteppingStoneCount = (props) => {
     const checkCol = sumCol.every((item, index) => (
       item === Number(points.destination[index].quality)
     ))
-    if (!checkCol && checkRow) console.error('НЕ ПРОШЛО ПРОВЕРКУ')
+
+    if (!(checkCol && checkRow)) console.error('НЕ ПРОШЛО ПРОВЕРКУ')
     // return checkRow
   };
 
@@ -602,9 +625,78 @@ const SteppingStoneCount = (props) => {
         objOfCoordinat[`OX${numberOfCount}`][1]
       ]
 
-      console.log('!!!tempMatrix', tempMatrix)
+      console.log('objOfCoordinat', objOfCoordinat)
+      console.log('tempMatrix', tempMatrix)
+      console.log('#######', 'END', '#######')
       checkMatrix(tempMatrix)
       return tempMatrix;
+    }
+    else {
+      if (numberOfCount % 2 !== 0) {
+        // /\ -> +1
+
+        // для  Y ->
+        const {
+          tempMatrix: newTempMatrixRigth,
+          objOfCoordinat: newObjOfCoordinatRigth
+        } = findRigthNotNullFurthest(
+          tempMatrix,
+          objOfCoordinat,
+          'Y',
+          numberOfCount,
+          '+',
+        );
+        tempMatrix = newTempMatrixRigth;
+        objOfCoordinat = newObjOfCoordinatRigth;
+
+
+        // для X /\
+        const {
+          tempMatrix: newTempMatrixTop,
+          objOfCoordinat: newObjOfCoordinatTop
+        } = findTopNotNullFurthest(
+          tempMatrix,
+          objOfCoordinat,
+          'X',
+          numberOfCount,
+          '+'
+        );
+        tempMatrix = newTempMatrixTop;
+        objOfCoordinat = newObjOfCoordinatTop;
+      }
+      else {
+        // <- \/ -1
+
+        // X <-
+        const {
+          tempMatrix: newTempMatrixLeft,
+          objOfCoordinat: newObjOfCoordinatLeft
+        } = findLeftNotNullFurthest(
+          tempMatrix,
+          objOfCoordinat,
+          'X',
+          numberOfCount,
+          '-',
+        )
+        tempMatrix = newTempMatrixLeft;
+        objOfCoordinat = newObjOfCoordinatLeft;
+
+
+        // Y \/
+        const {
+          tempMatrix: newTempMatrixBottom,
+          objOfCoordinat: newObjOfCoordinatBottom
+        } = findBottomNotNullFurthest(
+          tempMatrix,
+          objOfCoordinat,
+          'Y',
+          numberOfCount,
+          '-'
+        )
+        tempMatrix = newTempMatrixBottom;
+        objOfCoordinat = newObjOfCoordinatBottom;
+      }
+      manageMe(tempMatrix, objOfCoordinat, numberOfCount + 1)
     }
   };
 
