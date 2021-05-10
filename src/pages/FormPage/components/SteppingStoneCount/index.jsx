@@ -15,6 +15,70 @@ const SteppingStoneCount = (props) => {
       :
       'original'
   )
+
+
+  // функция для получения изменения общ стоимости затртат на величину 
+  // определяет оптимальнее исходного или нет
+  // новая времнная матрица
+  const getValueForOptimizeTempMatrix = (
+    tempMatrix,
+    objOfCoordinat,
+  ) => {
+    // objOfCoordinat : {
+    // OX1: (2) [0, 3]
+    // OY1: (2) [1, 4]
+    // finish: (2) [1, 3]
+    // original: (2) [0, 4]
+    // }
+
+    // или
+
+    // objOfCoordinat : {
+    // OX1: (2) [0, 3]
+    // OX2: (2) [1, 3]
+    // OX3: (2) [1, 5]
+    // OY1: (2) [2, 7]
+    // OY2: (2) [2, 5]
+    // OY3: (2) [1, 5]
+    // finish: (2) [1, 5]
+    // original: (2) [0, 7]
+    // }
+    if (objOfCoordinat.original) {
+
+
+      let setOfValue = new Set();
+      for (const key in objOfCoordinat) {
+        let value = objOfCoordinat[key].toString();
+        setOfValue.add(value)
+      }
+      // console.log('setOfValue', setOfValue)
+      let newCostsOneIteration = 0;
+
+      for (const coordinate of setOfValue) {
+        const [row, col] = coordinate.split(',')
+        const mathSign =
+          tempMatrix[row][col].x > matrix[row][col].x
+            ?
+            +1
+            :
+            -1;
+
+        newCostsOneIteration = newCostsOneIteration +
+          mathSign * matrix[row][col].c
+      }
+      // console.log('newCostsOneIteration', newCostsOneIteration)
+      return (
+        newCostsOneIteration < 0 
+        && 
+        {
+          newCostsOneIteration,
+          objOfCoordinat,
+        }
+        );
+    }
+  }
+
+
   // функция для поиска непустых ячеек слева(не нулевых Х) 
   // поиск  20 <=== 0
   const findLeftNotNullNearest = (
@@ -71,10 +135,10 @@ const SteppingStoneCount = (props) => {
     for (let leftCol = 0; leftCol < col; leftCol++) {
       if (matrix[row][leftCol].x) {
         // тут будет корректировака со знаком
-        if(mathSigh === '+'){
+        if (mathSigh === '+') {
           tempMatrix[row][leftCol].x++;
         }
-        else if (mathSigh === '-'){
+        else if (mathSigh === '-') {
           tempMatrix[row][leftCol].x--;
         }
         objOfCoordinat[nextCoordinatName] = [row, leftCol];
@@ -146,10 +210,10 @@ const SteppingStoneCount = (props) => {
 
       if (matrix[bottomRow][col].x) {
         // тут будет корректировака со знаком
-        if ( mathSign === '+'){
+        if (mathSign === '+') {
           tempMatrix[bottomRow][col].x++;
         }
-        else if(  mathSign ===  '-') {
+        else if (mathSign === '-') {
           tempMatrix[bottomRow][col].x--;
         }
 
@@ -625,9 +689,6 @@ const SteppingStoneCount = (props) => {
         objOfCoordinat[`OX${numberOfCount}`][1]
       ]
 
-      console.log('objOfCoordinat', objOfCoordinat)
-      console.log('tempMatrix', tempMatrix)
-      console.log('#######', 'END', '#######')
       checkMatrix(tempMatrix)
       return tempMatrix;
     }
@@ -704,7 +765,10 @@ const SteppingStoneCount = (props) => {
     const rowCount = matrix.length;
     const colCount = matrix[0].length;
 
-    let tempMatrix = getDeepClone()
+    let tempMatrix = getDeepClone();
+
+    let arrayOfCostsOneIteretion = [];
+
     for (let row = 0; row < matrix.length; row++) {
       const currentRow = matrix[row];
 
@@ -822,11 +886,19 @@ const SteppingStoneCount = (props) => {
           // }
           // console.log('#######', tempMatrix, '#######')
         }
+        const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
+        valueForOptimizeTempMatrix && arrayOfCostsOneIteretion.push(valueForOptimizeTempMatrix)
+
+
         tempMatrix = getDeepClone();
         // обнулить темпМатрикс
         // посчитать y[row][col] по темпМатрикс
       }
     }
+    // вызвать функцию, которая будет искать наименьшее в
+    // arrayOfCostsOneIteretion 
+    // а после этого считать новую матрицу (сдвигать)
+    console.log('arrayOfCostsOneIteretion', arrayOfCostsOneIteretion)
   };
 
 
