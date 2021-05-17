@@ -46,15 +46,15 @@ const SteppingStoneCount = (props) => {
     if (objOfCoordinat.original) {
 
 
-      let setOfValue = new Set();
+      let setOfCoordinat = new Set();
       for (const key in objOfCoordinat) {
         let value = objOfCoordinat[key].toString();
-        setOfValue.add(value)
+        setOfCoordinat.add(value)
       }
       // console.log('setOfValue', setOfValue)
       let newCostsOneIteration = 0;
 
-      for (const coordinate of setOfValue) {
+      for (const coordinate of setOfCoordinat) {
         const [row, col] = coordinate.split(',')
         const mathSign =
           tempMatrix[row][col].x > matrix[row][col].x
@@ -66,15 +66,18 @@ const SteppingStoneCount = (props) => {
         newCostsOneIteration = newCostsOneIteration +
           mathSign * matrix[row][col].c
       }
+      // console.log('setOfValue', setOfValue)
       // console.log('newCostsOneIteration', newCostsOneIteration)
       return (
-        newCostsOneIteration < 0 
-        && 
+        newCostsOneIteration < 0
+        &&
         {
           newCostsOneIteration,
-          objOfCoordinat,
+          // objOfCoordinat,
+          setOfCoordinat,
+          tempMatrix,
         }
-        );
+      );
     }
   }
 
@@ -148,6 +151,7 @@ const SteppingStoneCount = (props) => {
       }
     }
   }
+
   // функция для поиска непустых ячеек снизу (не нулевых Х)
   //  0
   //  ||
@@ -250,7 +254,6 @@ const SteppingStoneCount = (props) => {
       }
     }
   };
-
 
   const findRigthNotNullFurthest = (
     tempMatrix,
@@ -761,6 +764,78 @@ const SteppingStoneCount = (props) => {
     }
   };
 
+  const getMinValueFromMinusOne = (
+    setOfCoordinat,
+    tempMatrix) => {
+    let minValues = [];
+    // console.log('#######', Number(minValue) > 0, '#######')
+    for (const coordinate of setOfCoordinat) {
+      const [row, col] = coordinate.split(',')
+      if (tempMatrix[row][col].x < matrix[row][col].x) {
+        minValues.push(matrix[row][col].x);
+      }
+    }
+    const minValue = minValues.sort((a, b) => (
+      a.newCostsOneIteration - b.newCostsOneIteration
+    ))[0]
+
+    return minValue;
+  }
+
+  const changeMatrixForOptimized = (
+    arrayOfCostsOneIteretion,
+    // tempMatrix
+  ) => {
+    // const arr = [
+    //   {newCostsOneIteration: -13},
+    //   {newCostsOneIteration: 52},
+    //   {newCostsOneIteration: -13},
+    //   {newCostsOneIteration: 0},
+    //   {newCostsOneIteration: -333},
+    //   {newCostsOneIteration: 12},
+
+    // ]
+    const minValue = arrayOfCostsOneIteretion
+      .sort((a, b) => (
+        a.newCostsOneIteration - b.newCostsOneIteration
+      ))[0]
+
+    const {
+      // newCostsOneIteration,
+      // objOfCoordinat,
+      setOfCoordinat,
+      tempMatrix,
+    } = minValue;
+    // console.log('minValue', minValue)
+    // const arrCoordinateOfMinValueMinusOne = []
+    const optimizedMatrix = getDeepClone()
+    const minValueX = getMinValueFromMinusOne(setOfCoordinat, tempMatrix)
+    // console.log('setOfCoordinat', setOfCoordinat)
+    // console.log('ДО---- optimizedMatrix', optimizedMatrix)
+    for (const coordinate of setOfCoordinat) {
+      const [row, col] = coordinate.split(',')
+      if (tempMatrix[row][col].x < matrix[row][col].x) {
+        // то надо отнять мин число
+        optimizedMatrix[row][col].x = optimizedMatrix[row][col].x - minValueX
+      }
+      else {
+        // добавить мин число
+        optimizedMatrix[row][col].x = optimizedMatrix[row][col].x + minValueX
+      }
+
+      // если -1, то из этих коорддинат надо найти наименьший Х
+
+    }
+    console.log(' ПОСЛЕ optimizedMatrix', optimizedMatrix)
+    // console.log('arrCoordinateOfMinValueMinusOne', arrCoordinateOfMinValueMinusOne)
+    // надо переставить значения матрицы (Х)
+    // 
+
+
+  }
+
+
+
   const kek = () => {
     const rowCount = matrix.length;
     const colCount = matrix[0].length;
@@ -841,6 +916,7 @@ const SteppingStoneCount = (props) => {
 
             manageDown(tempMatrix, objOfCoordinat);
           }
+
           // replace manage();
           // manage(tempMatrix, objOfCoordinat)
           // console.log('#######', newMatrix, '#######')
@@ -895,10 +971,12 @@ const SteppingStoneCount = (props) => {
         // посчитать y[row][col] по темпМатрикс
       }
     }
+    
     // вызвать функцию, которая будет искать наименьшее в
     // arrayOfCostsOneIteretion 
     // а после этого считать новую матрицу (сдвигать)
-    console.log('arrayOfCostsOneIteretion', arrayOfCostsOneIteretion)
+    changeMatrixForOptimized(arrayOfCostsOneIteretion)
+    // console.log('arrayOfCostsOneIteretion', arrayOfCostsOneIteretion)
   };
 
 
