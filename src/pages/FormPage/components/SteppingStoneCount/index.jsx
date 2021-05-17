@@ -1,11 +1,29 @@
-import React, { memo } from "react";
-import { Button } from "@material-ui/core";
+import React, { memo, useEffect, useState } from "react";
+import { Button, Typography } from "@material-ui/core";
+import ResaltTable from '../ResaltTable';
 
 const SteppingStoneCount = (props) => {
   const {
     matrix,
     points,
+    fuzzyDataControl,
+    firstTotalCosts,
   } = props;
+
+  const [optimizedMatrixValue, setOptimizedMatrixValue]
+    = useState({
+      matrix: [],
+      costs: null,
+    });
+
+
+
+  useEffect(() => {
+    setOptimizedMatrixValue({
+      ...optimizedMatrixValue,
+      costs: firstTotalCosts,
+    })
+  }, [firstTotalCosts])
 
   const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
   const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
@@ -69,10 +87,10 @@ const SteppingStoneCount = (props) => {
       // console.log('setOfValue', setOfValue)
       // console.log('newCostsOneIteration', newCostsOneIteration)
       return (
-        newCostsOneIteration < 0
-        &&
+        // newCostsOneIteration < 0
+        // &&
         {
-          newCostsOneIteration,
+          // newCostsOneIteration,
           // objOfCoordinat,
           setOfCoordinat,
           tempMatrix,
@@ -764,6 +782,23 @@ const SteppingStoneCount = (props) => {
     }
   };
 
+  const getTotalCostsByCKey = (basePlan, key = 'c') => (
+    basePlan.reduce((acc, item) => {
+      return acc = acc + item.reduce((acc, item) => (
+        acc = acc + item[key] * item.x
+      ), 0)
+    }, 0)
+  );
+  const getTotalCosts = (basePlan) => {
+    if (fuzzyDataControl) {
+      const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
+      const totalCosts = getTotalCostsByCKey(basePlan)
+      const maxTotalCosts = getTotalCostsByCKey(basePlan, 'cMax')
+      return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})`;
+    }
+    return getTotalCostsByCKey(basePlan)
+  };
+
   const getMinValueFromMinusOne = (
     setOfCoordinat,
     tempMatrix) => {
@@ -782,10 +817,36 @@ const SteppingStoneCount = (props) => {
     return minValue;
   }
 
+  const checkOptimizedPlan = (optimizedMatrix) => {
+    const newCost = getTotalCosts(optimizedMatrix)
+    console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
+    // console.log('newCost', newCost)
+    // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
+    // console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
+    if (
+      // optimizedMatrixValue.costs === null
+      // ||
+      optimizedMatrixValue.costs > newCost
+    ) {
+      console.log('#######', 'HERE', '#######')
+      console.log('optimizedMatrixValue.costs ', optimizedMatrixValue.costs)
+      setOptimizedMatrixValue({
+        // ...optimizedMatrixValue,
+        matrix: optimizedMatrix,
+        costs: newCost,
+      })
+    }
+  }
+
+
   const changeMatrixForOptimized = (
-    arrayOfCostsOneIteretion,
-    // tempMatrix
+    // arrayOfCostsOneIteretion,
+    {
+      setOfCoordinat,
+      tempMatrix
+    }
   ) => {
+
     // const arr = [
     //   {newCostsOneIteration: -13},
     //   {newCostsOneIteration: 52},
@@ -795,23 +856,22 @@ const SteppingStoneCount = (props) => {
     //   {newCostsOneIteration: 12},
 
     // ]
-    const minValue = arrayOfCostsOneIteretion
-      .sort((a, b) => (
-        a.newCostsOneIteration - b.newCostsOneIteration
-      ))[0]
+    // const minValue = arrayOfCostsOneIteretion
+    //   .sort((a, b) => (
+    //     a.newCostsOneIteration - b.newCostsOneIteration
+    //   ))[0]
 
-    const {
-      // newCostsOneIteration,
-      // objOfCoordinat,
-      setOfCoordinat,
-      tempMatrix,
-    } = minValue;
+    // const {
+    //   // newCostsOneIteration,
+    //   // objOfCoordinat,
+    //   setOfCoordinat,
+    //   tempMatrix,
+    // } = minValue;
     // console.log('minValue', minValue)
     // const arrCoordinateOfMinValueMinusOne = []
     const optimizedMatrix = getDeepClone()
     const minValueX = getMinValueFromMinusOne(setOfCoordinat, tempMatrix)
-    // console.log('setOfCoordinat', setOfCoordinat)
-    // console.log('ДО---- optimizedMatrix', optimizedMatrix)
+
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
       if (tempMatrix[row][col].x < matrix[row][col].x) {
@@ -826,7 +886,22 @@ const SteppingStoneCount = (props) => {
       // если -1, то из этих коорддинат надо найти наименьший Х
 
     }
-    console.log(' ПОСЛЕ optimizedMatrix', optimizedMatrix)
+
+
+
+
+    // ====================
+    // const newCost = optimizedMatrix.reduce((acc, item) => {
+    //   return acc = acc + item.reduce((acc, item) => (
+    //     acc = acc + item.c * item.x
+    //   ), 0)
+    // }, 0)
+
+    checkOptimizedPlan(optimizedMatrix)
+    // const newCost = getTotalCosts(optimizedMatrix)
+    // console.log('newCost', newCost)
+    // ====================
+    // console.log(' ПОСЛЕ optimizedMatrix', optimizedMatrix)
     // console.log('arrCoordinateOfMinValueMinusOne', arrCoordinateOfMinValueMinusOne)
     // надо переставить значения матрицы (Х)
     // 
@@ -963,30 +1038,46 @@ const SteppingStoneCount = (props) => {
           // console.log('#######', tempMatrix, '#######')
         }
         const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
-        valueForOptimizeTempMatrix && arrayOfCostsOneIteretion.push(valueForOptimizeTempMatrix)
+        // valueForOptimizeTempMatrix && arrayOfCostsOneIteretion.push(valueForOptimizeTempMatrix)
 
+        if (valueForOptimizeTempMatrix) {
+          // он будет только для 0 ячеек , иначе андефайнд
+          // надо вычислить общие затртары по оптимизированной матрице
+          changeMatrixForOptimized(valueForOptimizeTempMatrix)
+        }
 
         tempMatrix = getDeepClone();
         // обнулить темпМатрикс
         // посчитать y[row][col] по темпМатрикс
       }
     }
-    
+    // console.log('optimizedMatrixValue',optimizedMatrixValue )
     // вызвать функцию, которая будет искать наименьшее в
     // arrayOfCostsOneIteretion 
     // а после этого считать новую матрицу (сдвигать)
-    changeMatrixForOptimized(arrayOfCostsOneIteretion)
+    // changeMatrixForOptimized(arrayOfCostsOneIteretion)
     // console.log('arrayOfCostsOneIteretion', arrayOfCostsOneIteretion)
   };
 
 
   return (
-    <Button
-      fullWidth
-      onClick={kek}
-    >
-      Оптимизировать затраты 1
-    </Button>
+    <>
+      <Button
+        fullWidth
+        onClick={kek}
+      >
+        Оптимизировать затраты 1 - {optimizedMatrixValue.costs}
+      </Button>
+
+    <Typography>
+      Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs}:
+    </Typography>
+    <ResaltTable
+     points={points}
+     matrix={optimizedMatrixValue.matrix}
+     name='значение'
+    />
+    </>
   )
 };
 

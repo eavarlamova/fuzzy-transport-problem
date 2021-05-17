@@ -193,6 +193,12 @@ const FormPage = () => {
     setFuzzyDataControl(!fuzzyDataControl)
   }
 
+  const totalBaseCost = useMemo(()=>{
+    console.log('#######', 'useMemo for total cost', '#######')
+    return (
+    getTotalCosts(matrix)
+  )},[matrix])
+
   return (
     <div className="form">
       <Grid
@@ -253,11 +259,13 @@ const FormPage = () => {
             matrix={matrix}
             name='значение'
           />
-          ОБЩИЕ ЗАТРТАТЫ - {getTotalCosts(matrix)}
-{console.log('matrix in FORM', matrix)}
+          ОБЩИЕ ЗАТРТАТЫ - {totalBaseCost}
+{/* {console.log('#######', getTotalCosts(matrix), '#######')} */}
           <SteppingStoneCount
             matrix={matrix}
             points={points}
+            fuzzyDataControl={fuzzyDataControl}
+            firstTotalCosts={totalBaseCost}
           />
         </Grid>
       </Grid>
