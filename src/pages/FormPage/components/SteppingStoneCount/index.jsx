@@ -861,7 +861,6 @@ const SteppingStoneCount = (props) => {
   const checkOptimizedPlan = (optimizedMatrix, prevData) => {
     const newCost = getTotalCosts(optimizedMatrix)
     // console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
-    console.log('newCost', newCost)
     // // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
     // console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
     // console.log('prevData.costs > newCost',prevData.costs ,'>', newCost, prevData.costs > newCost)
@@ -1099,11 +1098,13 @@ return prevData
           // надо вычислить общие затртары по оптимизированной матрице
           prevData =  changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
         }
-console.log('5555555prevData', prevData)
+// console.log('5555555prevData', prevData)
         tempMatrix = getDeepClone();
         // обнулить темпМатрикс
         // посчитать y[row][col] по темпМатрикс
       }
+      // console.log('prevData', prevData)
+      setOptimizedMatrixValue(prevData)
     }
     // console.log('optimizedMatrixValue',optimizedMatrixValue )
     // вызвать функцию, которая будет искать наименьшее в
