@@ -858,16 +858,18 @@ const SteppingStoneCount = (props) => {
   //   console.log('optimizedMatrixValue', optimizedMatrixValue)
   // }, optimizedMatrixValue)
 
-  const checkOptimizedPlan = (optimizedMatrix) => {
+  const checkOptimizedPlan = (optimizedMatrix, prevData) => {
     const newCost = getTotalCosts(optimizedMatrix)
-    console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
+    // console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
     console.log('newCost', newCost)
-    // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
-    console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
+    // // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
+    // console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
+    // console.log('prevData.costs > newCost',prevData.costs ,'>', newCost, prevData.costs > newCost)
     if (
       // optimizedMatrixValue.costs === null
       // ||
-      optimizedMatrixValue.costs > newCost
+      // optimizedMatrixValue.costs > newCost
+      prevData.costs > newCost
     ) {
       // console.log('#######', 'HERE', '#######', newCost, optimizedMatrixValue)
       // console.log('optimizedMatrixValue.costs ', optimizedMatrixValue.costs)
@@ -877,8 +879,10 @@ const SteppingStoneCount = (props) => {
         costs: newCost,
       }
       
-      setOptimizedMatrixValue(data)
+      // setOptimizedMatrixValue(data)
+      return data;
     }
+    return prevData;
   }
 
 
@@ -887,9 +891,10 @@ const SteppingStoneCount = (props) => {
     {
       setOfCoordinat,
       tempMatrix
-    }
+    },
+    prevData,
   ) => {
-
+// let prevData = {...optimizedMatrixValue};
     // const arr = [
     //   {newCostsOneIteration: -13},
     //   {newCostsOneIteration: 52},
@@ -939,8 +944,13 @@ const SteppingStoneCount = (props) => {
     //     acc = acc + item.c * item.x
     //   ), 0)
     // }, 0)
+    // console.log('data BEFORE', prevData)
 
-    checkOptimizedPlan(optimizedMatrix)
+    prevData = checkOptimizedPlan(optimizedMatrix, prevData)
+// console.log('data fter', prevData)
+return prevData
+// и эту дату надо вернуть и передать в сеттер
+
     // const newCost = getTotalCosts(optimizedMatrix)
     // console.log('newCost', newCost)
     // ====================
@@ -957,6 +967,7 @@ const SteppingStoneCount = (props) => {
   const kek = () => {
     const rowCount = matrix.length;
     const colCount = matrix[0].length;
+    let prevData = {...optimizedMatrixValue}
 
     let tempMatrix = getDeepClone();
 
@@ -1082,13 +1093,13 @@ const SteppingStoneCount = (props) => {
         }
         const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
         // valueForOptimizeTempMatrix && arrayOfCostsOneIteretion.push(valueForOptimizeTempMatrix)
-
+// let prevData = {...optimizedMatrixValue}
         if (valueForOptimizeTempMatrix) {
           // он будет только для 0 ячеек , иначе андефайнд
           // надо вычислить общие затртары по оптимизированной матрице
-          changeMatrixForOptimized(valueForOptimizeTempMatrix)
+          prevData =  changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
         }
-
+console.log('5555555prevData', prevData)
         tempMatrix = getDeepClone();
         // обнулить темпМатрикс
         // посчитать y[row][col] по темпМатрикс
