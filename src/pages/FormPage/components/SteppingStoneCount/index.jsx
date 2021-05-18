@@ -16,12 +16,14 @@ const SteppingStoneCount = (props) => {
       costs: null,
     });
 
-  useEffect(() => {
-    setOptimizedMatrixValue({
-      matrix: matrix,
-      costs: firstTotalCosts,
-    })
-  }, [firstTotalCosts, matrix])
+    // для четких данных
+  // useEffect(() => {
+  //   console.log('!!!!firstTotalCosts', firstTotalCosts)
+  //   // setOptimizedMatrixValue({
+  //   //   matrix: matrix,
+  //   //   costs: firstTotalCosts,
+  //   // })
+  // }, [firstTotalCosts, matrix])
 
   const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
   const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
@@ -796,7 +798,7 @@ const SteppingStoneCount = (props) => {
     }, 0)
   );
   const getTotalCosts = (basePlan) => {
-    console.log('#######', basePlan, '#######')
+    // console.log('#######', basePlan, '#######')
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
       const totalCosts = getTotalCostsByCKey(basePlan)
@@ -807,10 +809,10 @@ const SteppingStoneCount = (props) => {
         normal: totalCosts,
         max: maxTotalCosts,
       })
-      console.log('{min: minTotalCosts,        normal: totalCosts,        max: maxTotalCosts,}', 
-      {min: minTotalCosts,
-        normal: totalCosts,
-        max: maxTotalCosts,})
+      // console.log('{min: minTotalCosts,        normal: totalCosts,        max: maxTotalCosts,}', 
+      // {min: minTotalCosts,
+      //   normal: totalCosts,
+      //   max: maxTotalCosts,})
       // console.log('deviation', deviation)
       return deviation;
       // return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})`;
@@ -826,7 +828,7 @@ const SteppingStoneCount = (props) => {
       costs: getTotalCosts(matrix),
     })
 
-    return getTotalCosts(matrix);
+    // return getTotalCosts(matrix);
 
   }, [matrix])
   // console.log('totalDeviation', totalDeviation)
@@ -858,22 +860,23 @@ const SteppingStoneCount = (props) => {
 
   const checkOptimizedPlan = (optimizedMatrix) => {
     const newCost = getTotalCosts(optimizedMatrix)
-    // console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
-    // console.log('newCost', newCost)
+    console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
+    console.log('newCost', newCost)
     // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
-    // console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
+    console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
     if (
       // optimizedMatrixValue.costs === null
       // ||
       optimizedMatrixValue.costs > newCost
     ) {
-      console.log('#######', 'HERE', '#######', newCost, optimizedMatrixValue)
+      // console.log('#######', 'HERE', '#######', newCost, optimizedMatrixValue)
       // console.log('optimizedMatrixValue.costs ', optimizedMatrixValue.costs)
       const data = {
         // ...optimizedMatrixValue,
         matrix: optimizedMatrix,
         costs: newCost,
       }
+      
       setOptimizedMatrixValue(data)
     }
   }
