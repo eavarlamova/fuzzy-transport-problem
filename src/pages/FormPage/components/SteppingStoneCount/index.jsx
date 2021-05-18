@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { Button, Typography } from "@material-ui/core";
 import ResaltTable from '../ResaltTable';
 
@@ -16,14 +16,12 @@ const SteppingStoneCount = (props) => {
       costs: null,
     });
 
-
-
   useEffect(() => {
     setOptimizedMatrixValue({
-      ...optimizedMatrixValue,
+      matrix: matrix,
       costs: firstTotalCosts,
     })
-  }, [firstTotalCosts])
+  }, [firstTotalCosts, matrix])
 
   const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
   const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
@@ -782,6 +780,14 @@ const SteppingStoneCount = (props) => {
     }
   };
 
+  const getDeviationsForFuzzyData = ({ min, normal, max }) => {
+    // console.log('min, normal, max', min, normal, max)
+    // console.log('result',  (2*normal+min+max)/2)
+    return ((2 * normal + min + max) / 2)
+  }
+
+
+
   const getTotalCostsByCKey = (basePlan, key = 'c') => (
     basePlan.reduce((acc, item) => {
       return acc = acc + item.reduce((acc, item) => (
@@ -790,14 +796,42 @@ const SteppingStoneCount = (props) => {
     }, 0)
   );
   const getTotalCosts = (basePlan) => {
+    console.log('#######', basePlan, '#######')
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
       const totalCosts = getTotalCostsByCKey(basePlan)
       const maxTotalCosts = getTotalCostsByCKey(basePlan, 'cMax')
-      return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})`;
+
+      const deviation = getDeviationsForFuzzyData({
+        min: minTotalCosts,
+        normal: totalCosts,
+        max: maxTotalCosts,
+      })
+      console.log('{min: minTotalCosts,        normal: totalCosts,        max: maxTotalCosts,}', 
+      {min: minTotalCosts,
+        normal: totalCosts,
+        max: maxTotalCosts,})
+      // console.log('deviation', deviation)
+      return deviation;
+      // return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})`;
     }
     return getTotalCostsByCKey(basePlan)
   };
+
+  useEffect(() => {
+    // console.log('matrix', matrix)
+    setOptimizedMatrixValue({
+      ...optimizedMatrixValue,
+      matrix: matrix,
+      costs: getTotalCosts(matrix),
+    })
+
+    return getTotalCosts(matrix);
+
+  }, [matrix])
+  // console.log('totalDeviation', totalDeviation)
+
+
 
   const getMinValueFromMinusOne = (
     setOfCoordinat,
@@ -810,16 +844,21 @@ const SteppingStoneCount = (props) => {
         minValues.push(matrix[row][col].x);
       }
     }
-    const minValue = minValues.sort((a, b) => (
-      a.newCostsOneIteration - b.newCostsOneIteration
-    ))[0]
-
+    const minValue = minValues.sort((a, b) => {
+      return (
+      a - b
+    )})[0]
     return minValue;
   }
 
+
+  // useEffect(() => {
+  //   console.log('optimizedMatrixValue', optimizedMatrixValue)
+  // }, optimizedMatrixValue)
+
   const checkOptimizedPlan = (optimizedMatrix) => {
     const newCost = getTotalCosts(optimizedMatrix)
-    console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
+    // console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
     // console.log('newCost', newCost)
     // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
     // console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
@@ -828,13 +867,14 @@ const SteppingStoneCount = (props) => {
       // ||
       optimizedMatrixValue.costs > newCost
     ) {
-      console.log('#######', 'HERE', '#######')
-      console.log('optimizedMatrixValue.costs ', optimizedMatrixValue.costs)
-      setOptimizedMatrixValue({
+      console.log('#######', 'HERE', '#######', newCost, optimizedMatrixValue)
+      // console.log('optimizedMatrixValue.costs ', optimizedMatrixValue.costs)
+      const data = {
         // ...optimizedMatrixValue,
         matrix: optimizedMatrix,
         costs: newCost,
-      })
+      }
+      setOptimizedMatrixValue(data)
     }
   }
 
@@ -1069,14 +1109,14 @@ const SteppingStoneCount = (props) => {
         Оптимизировать затраты 1 - {optimizedMatrixValue.costs}
       </Button>
 
-    <Typography>
-      Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs}:
+      <Typography>
+        Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs}:
     </Typography>
-    <ResaltTable
-     points={points}
-     matrix={optimizedMatrixValue.matrix}
-     name='значение'
-    />
+      <ResaltTable
+        points={points}
+        matrix={optimizedMatrixValue.matrix}
+        name='значение'
+      />
     </>
   )
 };

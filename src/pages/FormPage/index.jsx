@@ -70,11 +70,11 @@ const FormPage = () => {
   }, [matrix])
 
   useEffect(() => {
-    console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
+    // console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
     const newMatrix = getDataFromLS('matrix') || [];
     const newPoints = getDataFromLS('points') || { departure: [], destination: [] };
     const newFuzzyDataControl = getDataFromLS('fuzzyDataControl' || false)
-    console.log('newMatrix in useEffect', newMatrix)
+    // console.log('newMatrix in useEffect', newMatrix)
     setMatrix(newMatrix);
     setPoints(newPoints);
     setFuzzyDataControl(newFuzzyDataControl);
@@ -93,7 +93,7 @@ const FormPage = () => {
   }, [fuzzyDataControl])
 
   const handleChange = (value, name, typeOfKey) => {
-    console.log('handleChange', value, name, typeOfKey)
+    // console.log('handleChange', value, name, typeOfKey)
     setCurrentPoint({
       ...currentPoint,
       [name]: {
@@ -194,7 +194,7 @@ const FormPage = () => {
   }
 
   const totalBaseCost = useMemo(()=>{
-    console.log('#######', 'useMemo for total cost', '#######')
+    // console.log('#######', 'useMemo for total cost', '#######')
     return (
     getTotalCosts(matrix)
   )},[matrix])
