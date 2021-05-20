@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useMemo, useState } from "react";
 import { Button, Typography } from "@material-ui/core";
 import ResaltTable from '../ResaltTable';
+import PDF from "../PDF";
 
 const SteppingStoneCount = (props) => {
   const {
@@ -13,19 +14,12 @@ const SteppingStoneCount = (props) => {
   const [optimizedMatrixValue, setOptimizedMatrixValue]
     = useState({
       matrix: [],
-      costs: null,
+      // costs: null,
     });
 
-    // для четких данных
-  // useEffect(() => {
-  //   console.log('!!!!firstTotalCosts', firstTotalCosts)
-  //   // setOptimizedMatrixValue({
-  //   //   matrix: matrix,
-  //   //   costs: firstTotalCosts,
-  //   // })
-  // }, [firstTotalCosts, matrix])
+  const [finish, setFinish] = useState(false)
 
-  const getDeepClone = () => JSON.parse(JSON.stringify(matrix));
+  const getDeepClone = (currentMatrix = matrix) => JSON.parse(JSON.stringify(currentMatrix));
   const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
     numberOfCount
       ?
@@ -63,14 +57,13 @@ const SteppingStoneCount = (props) => {
     // }
     if (objOfCoordinat.original) {
 
-
       let setOfCoordinat = new Set();
+      let newCostsOneIteration = 0;
+
       for (const key in objOfCoordinat) {
         let value = objOfCoordinat[key].toString();
         setOfCoordinat.add(value)
       }
-      // console.log('setOfValue', setOfValue)
-      let newCostsOneIteration = 0;
 
       for (const coordinate of setOfCoordinat) {
         const [row, col] = coordinate.split(',')
@@ -84,18 +77,11 @@ const SteppingStoneCount = (props) => {
         newCostsOneIteration = newCostsOneIteration +
           mathSign * matrix[row][col].c
       }
-      // console.log('setOfValue', setOfValue)
-      // console.log('newCostsOneIteration', newCostsOneIteration)
-      return (
-        // newCostsOneIteration < 0
-        // &&
-        {
-          // newCostsOneIteration,
-          // objOfCoordinat,
-          setOfCoordinat,
-          tempMatrix,
-        }
-      );
+
+      return ({
+        setOfCoordinat,
+        tempMatrix,
+      });
     }
   }
 
@@ -121,7 +107,6 @@ const SteppingStoneCount = (props) => {
 
     for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
       if (matrix[row][leftCol].x !== 0) {
-        // тут будет корректировака со знаком
         if (mathSigh === '-') {
           tempMatrix[row][leftCol].x--;
         }
@@ -129,8 +114,6 @@ const SteppingStoneCount = (props) => {
           tempMatrix[row][leftCol].x++;
         }
         objOfCoordinat[nextCoordinatName] = [row, leftCol];
-        // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
-        // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
         return { tempMatrix, objOfCoordinat };
       }
     }
@@ -155,7 +138,6 @@ const SteppingStoneCount = (props) => {
 
     for (let leftCol = 0; leftCol < col; leftCol++) {
       if (matrix[row][leftCol].x) {
-        // тут будет корректировака со знаком
         if (mathSigh === '+') {
           tempMatrix[row][leftCol].x++;
         }
@@ -163,8 +145,6 @@ const SteppingStoneCount = (props) => {
           tempMatrix[row][leftCol].x--;
         }
         objOfCoordinat[nextCoordinatName] = [row, leftCol];
-        // console.log('NEW FUN nextCoordinatName', nextCoordinatName)
-        // console.log('NEW FUN objOfCoordinat[nextCoordinatName]', objOfCoordinat[nextCoordinatName])
         return { tempMatrix, objOfCoordinat };
       }
     }
@@ -184,7 +164,6 @@ const SteppingStoneCount = (props) => {
     //            для верхних нулевых значений матрицы
     // =          т.е. первой проходки от 0
     numberOfCount = 0,
-    mathSign = '-',
   ) => {
     const currentCoordinatName =
       getCorrectKeyForObjOfCoordinat(key, numberOfCount)
@@ -196,13 +175,7 @@ const SteppingStoneCount = (props) => {
 
     for (let bottomRow = row + 1; bottomRow < rowLength; bottomRow++) {
       if (matrix[bottomRow][col].x) {
-        // тут будет корректировака со знаком
-        // if (mathSign === '-') {
         tempMatrix[bottomRow][col].x--;
-        // }
-        // else {
-        // tempMatrix[bottomRow][col].x++;
-        // }
         objOfCoordinat[nextCoordinatName] = [bottomRow, col];
         return { tempMatrix, objOfCoordinat };
       }
@@ -231,7 +204,6 @@ const SteppingStoneCount = (props) => {
     for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
 
       if (matrix[bottomRow][col].x) {
-        // тут будет корректировака со знаком
         if (mathSign === '+') {
           tempMatrix[bottomRow][col].x++;
         }
@@ -265,7 +237,6 @@ const SteppingStoneCount = (props) => {
 
     for (let rigthCol = row + 1; rigthCol < colLength; rigthCol++) {
       if (matrix[row][rigthCol].x) {
-        // тут будет корректировака со знаком
         tempMatrix[row][rigthCol].x--;
         objOfCoordinat[nextCoordinatName] = [row, rigthCol];
         return { tempMatrix, objOfCoordinat };
@@ -292,7 +263,6 @@ const SteppingStoneCount = (props) => {
 
     for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
       if (matrix[row][rigthCol].x) {
-        // тут будет корректировака со знаком
         if (mathSign === '-') {
           tempMatrix[row][rigthCol].x--;
         }
@@ -328,13 +298,13 @@ const SteppingStoneCount = (props) => {
 
     for (let topRow = row - 1; topRow >= 0; topRow--) {
       if (matrix[topRow][col].x) {
-        // тут будет корректировака со знаком
         tempMatrix[topRow][col].x--;
         objOfCoordinat[nextCoordinatName] = [topRow, col];
         return { tempMatrix, objOfCoordinat };
       }
     }
   };
+
   const findTopNotNullFurthest = (
     tempMatrix,
     objOfCoordinat,
@@ -353,7 +323,6 @@ const SteppingStoneCount = (props) => {
 
     for (let topRow = 0; topRow < row; topRow++) {
       if (matrix[topRow][col].x) {
-        // тут будет корректировака со знаком
         if (mathSigh === '-') {
           tempMatrix[topRow][col].x--;
         }
@@ -367,7 +336,6 @@ const SteppingStoneCount = (props) => {
   };
 
   const checkMatrix = (tempMatrix) => {
-    // пройти по всем строкам 
     const sumRow = tempMatrix.map((row) => {
       return row.reduce((acc, col) => {
         return acc = acc + Number(col.x)
@@ -387,174 +355,8 @@ const SteppingStoneCount = (props) => {
     ))
 
     if (!(checkCol && checkRow)) console.error('НЕ ПРОШЛО ПРОВЕРКУ')
-    // return checkRow
   };
 
-  // const getNewCoordinatePlus = function (start, end, index, from = 'top') {
-  //   // console.log('start, end, index', start, end, index)
-  //   for (
-  //     let newCoordinate = start;
-  //     newCoordinate < end;
-  //     newCoordinate++
-  //   ) {
-  //     let cell = {};
-  //     let cordinateArray = [];
-  //     if (from === 'top') {
-  //       cell = matrix[index][newCoordinate]
-  //       cordinateArray = [index, newCoordinate]
-  //     }
-  //     else if (from === 'bottom') {
-  //       cell = matrix[newCoordinate][index]
-  //       cordinateArray = [newCoordinate, index]
-  //     }
-  //     // const OXSecondCoordinate = matrix[index][newCoordinate];
-  //     if (cell.x) {
-  //       // наша вторая координата OX
-  //       // console.log('cordinateArray!!!', cordinateArray)
-  //       return cordinateArray;
-  //     }
-  //   }
-  // }
-
-  // const getNewCoordinateMinus = (start, end, index, from = 'top') => {
-  //   //  если top, то определяется OY, возвращается [newCoordinate, col]
-  //   //  если bottom, то OX, возвращается [row, newCoordinate] 
-  //   for (
-  //     let newCoordinate = start;
-  //     newCoordinate > end;
-  //     newCoordinate--
-  //   ) {
-  //     let cell = {};
-  //     let cordinateArray = [];
-  //     if (from === 'top') {
-  //       cell = matrix[newCoordinate][index]
-  //       cordinateArray = [newCoordinate, index]
-  //     }
-  //     else if (from === 'bottom') {
-  //       cell = matrix[index][newCoordinate]
-  //       cordinateArray = [index, newCoordinate]
-  //     }
-  //     if (cell.x) {
-  //       return cordinateArray;
-  //     }
-  //   }
-  // };
-
-  // const manage = function manageMe(tempMatrix, objOfCoordinat, col) {
-  //   if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
-  //     tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x++;
-  //   }
-  //   else {
-  //     if (objOfCoordinat.OX1[1] < col) {
-
-  //       // find new OX coordinate
-  //       objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
-  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
-  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-
-  //       // find new OY coordinat
-  //       objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
-  //       const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
-  //       tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-  //     }
-  //     else {
-  //       objOfCoordinat.OX2 = getNewCoordinateMinus(
-  //         objOfCoordinat.OX1[1],
-  //         objOfCoordinat.OY1[1],
-  //         objOfCoordinat.OY1[0],
-  //         'bottom'
-  //       )
-  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
-  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-
-  //       // find new OY coordinat
-  //       const newOY = getNewCoordinateMinus(
-  //         objOfCoordinat.OX1[0] - 1,
-  //         objOfCoordinat.OY1[0] + 1,
-  //         objOfCoordinat.OX1[1]
-  //       )
-  //       if (newOY) {
-  //         objOfCoordinat.OY2 = newOY;
-  //         const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
-  //         tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-  //       }
-  //     }
-  //     // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
-  //   }
-
-  //   console.log('tempMatrix', tempMatrix)
-  //  };
-
-  // const manage = function manageMe(tempMatrix, objOfCoordinat, numberOfCount = 1) {
-  //   let keyCountX = `OX${numberOfCount}`;
-  //   let keyCountY = `OY${numberOfCount}`;
-  //   let keyCountXNext = `OX${numberOfCount + 1}`
-  //   let keyCountYNext = `OY${numberOfCount + 1}`
-  //   // console.log('keyCountY', keyCountY)
-  //   if (tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x) {
-  //     tempMatrix[objOfCoordinat[keyCountY][0]][objOfCoordinat[keyCountX][1]].x++;
-  //     // return tempMatrix; 
-  //     objOfCoordinat.finish = [objOfCoordinat[keyCountY][0], objOfCoordinat[keyCountX][1]]
-  //     return;
-  //   }
-  //   else {
-  //     if (objOfCoordinat[keyCountX][1] < objOfCoordinat.original[1]) {
-
-  //       // find new OX coordinate
-  //       objOfCoordinat[keyCountXNext] = getNewCoordinatePlus(
-  //         objOfCoordinat[keyCountX][1],
-  //         objOfCoordinat[keyCountY][1],
-  //         objOfCoordinat[keyCountY][0]
-  //       )
-  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
-  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-
-  //       // find new OY coordinat
-  //       objOfCoordinat[keyCountYNext] = getNewCoordinateMinus(
-  //         objOfCoordinat[keyCountY][0],
-  //         objOfCoordinat[keyCountX][0],
-  //         objOfCoordinat[keyCountX][1]);
-
-  //       //           console.log(' OLD keyCountYNext', keyCountYNext)
-  //       // console.log(' OLD objOfCoordinat[keyCountYNext]',  objOfCoordinat[keyCountYNext])
-
-  //       //         findLeftNotNull(keyCountY, tempMatrix, objOfCoordinat, 'Y', 1)
-  //       const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
-  //       tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-  //     }
-  //     else {
-  //       // console.log('objOfCoordinat[keyCountY]', objOfCoordinat[keyCountY])
-  //       objOfCoordinat[keyCountXNext] = getNewCoordinateMinus(
-  //         objOfCoordinat[keyCountX][1],
-  //         objOfCoordinat[keyCountY][1],
-  //         objOfCoordinat[keyCountY][0],
-  //         'bottom'
-  //       )
-  //       const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat[keyCountXNext]
-  //       tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-
-  //       // find new OY coordinat
-  //       const newOY = getNewCoordinateMinus(
-  //         objOfCoordinat[keyCountX][0] - 1,
-  //         objOfCoordinat[keyCountY][0] + 1,
-  //         objOfCoordinat[keyCountX][1]
-  //       )
-  //       if (newOY) {
-  //         objOfCoordinat[keyCountYNext] = newOY;
-  //         const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat[keyCountYNext]
-  //         tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-  //       }
-  //     }
-  //     // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
-  //   }
-  //   // console.log('objOfCoordinat', objOfCoordinat)
-  //   // manageMe(tempMatrix, objOfCoordinat, col , numberOfCount+1)
-  //   // console.log('tempMatrix', tempMatrix)
-  // };
-
-
-  // функция для поиска НЕ первых непустых координат
-  // для верхнего уровня матрицы
 
   const manageUp = function manageMe(
     tempMatrix,
@@ -597,7 +399,6 @@ const SteppingStoneCount = (props) => {
       return tempMatrix;
     }
     else {
-
       // нет - значит надо найти следующие коордианты,
       // которые могут привести к появлянию финишной ячейки
       if (numberOfCount % 2 !== 0) {
@@ -619,9 +420,6 @@ const SteppingStoneCount = (props) => {
         tempMatrix = newTempMatrixLeft;
         objOfCoordinat = newObjOfCoordinatLeft;
 
-
-
-
         // \/
         // это для X
         const {
@@ -636,12 +434,8 @@ const SteppingStoneCount = (props) => {
         )
         tempMatrix = newTempMatrixBottom;
         objOfCoordinat = newObjOfCoordinatBottom;
-        // console.log('tempMatrix', tempMatrix)
-
-
       }
       else {
-        // 2 4 6 8...
         // -> /\
         //  -1
         const {
@@ -731,7 +525,6 @@ const SteppingStoneCount = (props) => {
         tempMatrix = newTempMatrixRigth;
         objOfCoordinat = newObjOfCoordinatRigth;
 
-
         // для X /\
         const {
           tempMatrix: newTempMatrixTop,
@@ -782,13 +575,7 @@ const SteppingStoneCount = (props) => {
     }
   };
 
-  const getDeviationsForFuzzyData = ({ min, normal, max }) => {
-    // console.log('min, normal, max', min, normal, max)
-    // console.log('result',  (2*normal+min+max)/2)
-    return ((2 * normal + min + max) / 2)
-  }
-
-
+  const getDeviationsForFuzzyData = ({ min, normal, max }) => ((2 * normal + min + max) / 2);
 
   const getTotalCostsByCKey = (basePlan, key = 'c') => (
     basePlan.reduce((acc, item) => {
@@ -797,8 +584,8 @@ const SteppingStoneCount = (props) => {
       ), 0)
     }, 0)
   );
+
   const getTotalCosts = (basePlan) => {
-    // console.log('#######', basePlan, '#######')
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
       const totalCosts = getTotalCostsByCKey(basePlan)
@@ -809,37 +596,23 @@ const SteppingStoneCount = (props) => {
         normal: totalCosts,
         max: maxTotalCosts,
       })
-      // console.log('{min: minTotalCosts,        normal: totalCosts,        max: maxTotalCosts,}', 
-      // {min: minTotalCosts,
-      //   normal: totalCosts,
-      //   max: maxTotalCosts,})
-      // console.log('deviation', deviation)
       return deviation;
-      // return `(${minTotalCosts}, ${totalCosts}, ${maxTotalCosts})`;
     }
     return getTotalCostsByCKey(basePlan)
   };
 
   useEffect(() => {
-    // console.log('matrix', matrix)
     setOptimizedMatrixValue({
       ...optimizedMatrixValue,
       matrix: matrix,
       costs: getTotalCosts(matrix),
     })
-
-    // return getTotalCosts(matrix);
-
-  }, [matrix])
-  // console.log('totalDeviation', totalDeviation)
-
-
+  }, [matrix]);
 
   const getMinValueFromMinusOne = (
     setOfCoordinat,
     tempMatrix) => {
     let minValues = [];
-    // console.log('#######', Number(minValue) > 0, '#######')
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
       if (tempMatrix[row][col].x < matrix[row][col].x) {
@@ -848,77 +621,37 @@ const SteppingStoneCount = (props) => {
     }
     const minValue = minValues.sort((a, b) => {
       return (
-      a - b
-    )})[0]
+        a - b
+      )
+    })[0]
     return minValue;
-  }
-
-
-  // useEffect(() => {
-  //   console.log('optimizedMatrixValue', optimizedMatrixValue)
-  // }, optimizedMatrixValue)
+  };
 
   const checkOptimizedPlan = (optimizedMatrix, prevData) => {
     const newCost = getTotalCosts(optimizedMatrix)
-    // console.log('optimizedMatrixValue.costs', optimizedMatrixValue.costs)
-    // // console.log('optimizedMatrixValue.costs === null', optimizedMatrixValue.costs === null)
-    // console.log('optimizedMatrixValue.costs > newCost', optimizedMatrixValue.costs > newCost)
-    // console.log('prevData.costs > newCost',prevData.costs ,'>', newCost, prevData.costs > newCost)
-    if (
-      // optimizedMatrixValue.costs === null
-      // ||
-      // optimizedMatrixValue.costs > newCost
-      prevData.costs > newCost
-    ) {
-      // console.log('#######', 'HERE', '#######', newCost, optimizedMatrixValue)
-      // console.log('optimizedMatrixValue.costs ', optimizedMatrixValue.costs)
+    if (prevData.costs > newCost) {
       const data = {
-        // ...optimizedMatrixValue,
         matrix: optimizedMatrix,
         costs: newCost,
       }
-      
-      // setOptimizedMatrixValue(data)
       return data;
     }
     return prevData;
-  }
+  };
 
 
   const changeMatrixForOptimized = (
-    // arrayOfCostsOneIteretion,
     {
       setOfCoordinat,
       tempMatrix
     },
     prevData,
   ) => {
-// let prevData = {...optimizedMatrixValue};
-    // const arr = [
-    //   {newCostsOneIteration: -13},
-    //   {newCostsOneIteration: 52},
-    //   {newCostsOneIteration: -13},
-    //   {newCostsOneIteration: 0},
-    //   {newCostsOneIteration: -333},
-    //   {newCostsOneIteration: 12},
-
-    // ]
-    // const minValue = arrayOfCostsOneIteretion
-    //   .sort((a, b) => (
-    //     a.newCostsOneIteration - b.newCostsOneIteration
-    //   ))[0]
-
-    // const {
-    //   // newCostsOneIteration,
-    //   // objOfCoordinat,
-    //   setOfCoordinat,
-    //   tempMatrix,
-    // } = minValue;
-    // console.log('minValue', minValue)
-    // const arrCoordinateOfMinValueMinusOne = []
     const optimizedMatrix = getDeepClone()
     const minValueX = getMinValueFromMinusOne(setOfCoordinat, tempMatrix)
-
+    const matrix = optimizedMatrixValue.matrix
+    // console.log('matrix', matrix)
+    // console.log('optimizedMatrixValue.matrix',optimizedMatrixValue.matrix )
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
       if (tempMatrix[row][col].x < matrix[row][col].x) {
@@ -929,50 +662,25 @@ const SteppingStoneCount = (props) => {
         // добавить мин число
         optimizedMatrix[row][col].x = optimizedMatrix[row][col].x + minValueX
       }
-
-      // если -1, то из этих коорддинат надо найти наименьший Х
-
-    }
-
-
-
-
-    // ====================
-    // const newCost = optimizedMatrix.reduce((acc, item) => {
-    //   return acc = acc + item.reduce((acc, item) => (
-    //     acc = acc + item.c * item.x
-    //   ), 0)
-    // }, 0)
-    // console.log('data BEFORE', prevData)
+    };
 
     prevData = checkOptimizedPlan(optimizedMatrix, prevData)
-// console.log('data fter', prevData)
-return prevData
-// и эту дату надо вернуть и передать в сеттер
+    return prevData
+  };
 
-    // const newCost = getTotalCosts(optimizedMatrix)
-    // console.log('newCost', newCost)
-    // ====================
-    // console.log(' ПОСЛЕ optimizedMatrix', optimizedMatrix)
-    // console.log('arrCoordinateOfMinValueMinusOne', arrCoordinateOfMinValueMinusOne)
-    // надо переставить значения матрицы (Х)
-    // 
-
-
-  }
-
-
-
-  const kek = () => {
+  const kek = function makeDeepOptimize(event, currrentData = optimizedMatrixValue, someNewData = {}) {
+    // const colCount = matrix[0].length;
+    // let prevData = { ...optimizedMatrixValue }
+    let prevData = { ...currrentData }
+    console.log('#######', prevData, '#######')
+    const matrix = prevData.matrix;
+    // console.log('matrix', matrix)
     const rowCount = matrix.length;
-    const colCount = matrix[0].length;
-    let prevData = {...optimizedMatrixValue}
+    // console.log('prevData', prevData)
+    let tempMatrix = getDeepClone(matrix);
 
-    let tempMatrix = getDeepClone();
 
-    let arrayOfCostsOneIteretion = [];
-
-    for (let row = 0; row < matrix.length; row++) {
+    for (let row = 0; row < rowCount; row++) {
       const currentRow = matrix[row];
 
       let haveFullX = false;
@@ -980,8 +688,6 @@ return prevData
         let currentCell = currentRow[col];
         haveFullX = haveFullX || Boolean(currentCell.x);
 
-        // let indexOX = null;
-        // let indexOY = null;
         let objOfCoordinat = {};
         if (currentCell.x === 0) {
           // мы нашли пустую клетку
@@ -1041,78 +747,46 @@ return prevData
             tempMatrix = newTempMatrixTop;
             objOfCoordinat = newObjOfCoordinatTop;
 
-
             manageDown(tempMatrix, objOfCoordinat);
           }
-
-          // replace manage();
-          // manage(tempMatrix, objOfCoordinat)
-          // console.log('#######', newMatrix, '#######')
-          // if (tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x) {
-          //   tempMatrix[objOfCoordinat.OY1[0]][objOfCoordinat.OX1[1]].x++;
-          // }
-          // else {
-          //   if (objOfCoordinat.OX1[1] < col) {
-
-          //     // find new OX coordinate
-          //     objOfCoordinat.OX2 = getNewCoordinatePlus(objOfCoordinat.OX1[1], objOfCoordinat.OY1[1], objOfCoordinat.OY1[0])
-          //     const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
-          //     tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-
-          //     // find new OY coordinat
-          //     objOfCoordinat.OY2 = getNewCoordinateMinus(objOfCoordinat.OY1[0], objOfCoordinat.OX1[0], objOfCoordinat.OX1[1]);
-          //     const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
-          //     tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-          //   }
-          //   else {
-          //     objOfCoordinat.OX2 = getNewCoordinateMinus(
-          //       objOfCoordinat.OX1[1],
-          //       objOfCoordinat.OY1[1],
-          //       objOfCoordinat.OY1[0],
-          //       'bottom'
-          //     )
-          //     const [coordinateRowOX2, coordinateColOX2] = objOfCoordinat.OX2
-          //     tempMatrix[coordinateRowOX2][coordinateColOX2].x++;
-
-          //     // find new OY coordinat
-          //     const newOY = getNewCoordinateMinus(
-          //       objOfCoordinat.OX1[0] - 1,
-          //       objOfCoordinat.OY1[0] + 1,
-          //       objOfCoordinat.OX1[1]
-          //     )
-          //     if (newOY) {
-          //       objOfCoordinat.OY2 = newOY;
-          //       const [coordinateRowOY2, coordinateColOY2] = objOfCoordinat.OY2
-          //       tempMatrix[coordinateRowOY2][coordinateColOY2].x++;
-          //     }
-          //   }
-          //   // поиск доп непустых клеток куда добавить +1 для уравнивания столбцов и строк
-          // }
-          // console.log('#######', tempMatrix, '#######')
         }
         const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
-        // valueForOptimizeTempMatrix && arrayOfCostsOneIteretion.push(valueForOptimizeTempMatrix)
-// let prevData = {...optimizedMatrixValue}
         if (valueForOptimizeTempMatrix) {
           // он будет только для 0 ячеек , иначе андефайнд
           // надо вычислить общие затртары по оптимизированной матрице
-          prevData =  changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
+          prevData = changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
         }
-// console.log('5555555prevData', prevData)
         tempMatrix = getDeepClone();
-        // обнулить темпМатрикс
-        // посчитать y[row][col] по темпМатрикс
       }
-      // console.log('prevData', prevData)
-      setOptimizedMatrixValue(prevData)
+
+      // console.log('optimizedMatrixValue.costs', someNewData.costs)
+      // console.log('prevData.costs', prevData.costs)
+      if (prevData.costs !== someNewData.costs) {
+        setOptimizedMatrixValue(prevData)
+        // setFinish(true)
+        // console.log('#######', 'HERE', '#######')
+        // console.log('prevData', prevData)
+        // makeDeepOptimize(null, prevData)
+        // makeDeepOptimize()
+        // recursive
+      }
     }
-    // console.log('optimizedMatrixValue',optimizedMatrixValue )
-    // вызвать функцию, которая будет искать наименьшее в
-    // arrayOfCostsOneIteretion 
-    // а после этого считать новую матрицу (сдвигать)
-    // changeMatrixForOptimized(arrayOfCostsOneIteretion)
-    // console.log('arrayOfCostsOneIteretion', arrayOfCostsOneIteretion)
+
+    console.log('data', prevData.costs, currrentData.costs)
+    if (prevData.costs !== someNewData.costs) {
+      console.log('prevData, currrentData', prevData, currrentData)
+      makeDeepOptimize(null, prevData, currrentData)
+    }
   };
+
+  useEffect(() => {
+    console.log('finish', finish)
+    if (finish) {
+      // console.log('finish', finish)
+      kek()
+    }
+  }, [finish])
+
 
 
   return (
@@ -1132,6 +806,17 @@ return prevData
         matrix={optimizedMatrixValue.matrix}
         name='значение'
       />
+      {/* {console.log('#######', points, '#######')} */}
+      {/* {points.length ? */}
+        <PDF
+          matrix={matrix}
+          points={points}
+          fuzzyDataControl={fuzzyDataControl}
+        />
+{/* 
+        :
+        ''
+      } */}
     </>
   )
 };

@@ -5,6 +5,7 @@ import ResaltTable from "./components/ResaltTable";
 import SteppingStoneCount from "./components/SteppingStoneCount";
 import { setDataToLS, getDataFromLS } from '../../helpers/localStorage';
 import './index.scss';
+import PDF from './components/PDF';
 
 const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
@@ -267,6 +268,9 @@ const FormPage = () => {
             fuzzyDataControl={fuzzyDataControl}
             firstTotalCosts={totalBaseCost}
           />
+
+
+         
         </Grid>
       </Grid>
     </div>
