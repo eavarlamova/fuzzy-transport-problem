@@ -584,7 +584,9 @@ const SteppingStoneCount = (props) => {
       ), 0)
     }, 0)
   );
-
+const getFullCostsForFuzzyData = (matrix=matrix) => (
+  `(${getTotalCostsByCKey(matrix, 'cMin')},${getTotalCostsByCKey(matrix)},${getTotalCostsByCKey(matrix, 'cMax')})`
+)
   const getTotalCosts = (basePlan) => {
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
@@ -597,6 +599,14 @@ const SteppingStoneCount = (props) => {
         max: maxTotalCosts,
       })
       return deviation;
+      // return {
+      //   costs: deviation,
+      //   fullCosts: `(
+      //     ${minTotalCosts},
+      //     ${totalCosts},
+      //     ${maxTotalCosts},
+      //   )`
+      // };
     }
     return getTotalCostsByCKey(basePlan)
   };
@@ -671,8 +681,8 @@ const SteppingStoneCount = (props) => {
   const kek = function makeDeepOptimize(event, currrentData = optimizedMatrixValue, someNewData = {}) {
     // const colCount = matrix[0].length;
     // let prevData = { ...optimizedMatrixValue }
-    let prevData = { ...currrentData }
-    console.log('#######', prevData, '#######')
+    let prevData = getDeepClone(currrentData);
+    // console.log('#######', prevData, '#######')
     const matrix = prevData.matrix;
     // console.log('matrix', matrix)
     const rowCount = matrix.length;
@@ -773,10 +783,10 @@ const SteppingStoneCount = (props) => {
     }
 
     console.log('data', prevData.costs, currrentData.costs)
-    if (prevData.costs !== someNewData.costs) {
-      console.log('prevData, currrentData', prevData, currrentData)
-      makeDeepOptimize(null, prevData, currrentData)
-    }
+    // if (prevData.costs !== someNewData.costs) {
+    //   console.log('prevData, currrentData', prevData, currrentData)
+    //   makeDeepOptimize(null, prevData, currrentData)
+    // }
   };
 
   useEffect(() => {
@@ -813,6 +823,9 @@ const SteppingStoneCount = (props) => {
           points={points}
           fuzzyDataControl={fuzzyDataControl}
           firstTotalCosts={firstTotalCosts}
+          firstDeviation ={ getTotalCosts(matrix)}
+          optimizedMatrixValue={optimizedMatrixValue}
+          optimizedMatrixFullCosts={getFullCostsForFuzzyData(optimizedMatrixValue.matrix)}
         />
 {/* 
         :
