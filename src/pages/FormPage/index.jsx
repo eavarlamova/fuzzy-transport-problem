@@ -74,15 +74,15 @@ const FormPage = () => {
         ))
   }, [matrix, fuzzyDataControl])
 
-  useEffect(()=>{
-    if(fullnestMatrix){
+  useEffect(() => {
+    if (fullnestMatrix && ( points.departure.length>1 || points.destination.length>1)) {
       setStep(1)
     }
-    else{
+    else {
       setStep(0)
       setMakeBasePlan(false)
     }
-  },[fullnestMatrix])
+  }, [fullnestMatrix])
 
 
   useEffect(() => {
@@ -253,29 +253,41 @@ const FormPage = () => {
           />
         </Grid>
         <Grid item xs={12} >
-          <ResaltTable
-            points={points}
-            matrix={matrix}
-            handleChangePrice={handleChangePrice}
-            name='стоимость'
-            deletePoint={deletePoint}
-            fuzzyDataControl={fuzzyDataControl}
-          />
-          {fullnestMatrix ?
-            <Button
-              fullWidth
-              onClick={countBasePlan}
-            >
-              посчитать опорный план
+          {
+            points.departure.length || points.destination.length
+              ?
+              (
+                <>
+                  <ResaltTable
+                    points={points}
+                    matrix={matrix}
+                    handleChangePrice={handleChangePrice}
+                    name='стоимость'
+                    deletePoint={deletePoint}
+                    fuzzyDataControl={fuzzyDataControl}
+                  />
+
+                  {fullnestMatrix ?
+                    <Button
+                      fullWidth
+                      onClick={countBasePlan}
+                    >
+                      посчитать опорный план
             </Button>
-            :
-            <Button
-              fullWidth
-              disabled
-            >
-              посчитать опорный план
+                    :
+                    <Button
+                      fullWidth
+                      disabled
+                    >
+                      посчитать опорный план
             </Button>
+                  }
+                </>
+              )
+              :
+              ''
           }
+
           {
             makeBasePlan
               ?
