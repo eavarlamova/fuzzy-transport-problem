@@ -6,11 +6,12 @@
 
  
 };
-.stepper   {
-    // fill: #f50057
+.stepper  {
+    .MuiStepIcon-active, .MuiStepIcon-completed {
+    fill: #f50057
     // display: flex;
     // width: 100%;
-}
+}}
 
 .table {
 

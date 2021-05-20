@@ -80,6 +80,7 @@ const FormPage = () => {
     }
     else{
       setStep(0)
+      setMakeBasePlan(false)
     }
   },[fullnestMatrix])
 
