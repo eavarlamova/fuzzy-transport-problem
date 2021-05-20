@@ -9,6 +9,7 @@ const SteppingStoneCount = (props) => {
     points,
     fuzzyDataControl,
     firstTotalCosts,
+    setStep
   } = props;
 
   const [optimizedMatrixValue, setOptimizedMatrixValue]
@@ -18,6 +19,7 @@ const SteppingStoneCount = (props) => {
     });
 
   const [finish, setFinish] = useState(false)
+  const [makeOptimize, setMakeOptimize] = useState(false)
 
   const getDeepClone = (currentMatrix = matrix) => JSON.parse(JSON.stringify(currentMatrix));
   const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
@@ -584,9 +586,9 @@ const SteppingStoneCount = (props) => {
       ), 0)
     }, 0)
   );
-const getFullCostsForFuzzyData = (matrix=matrix) => (
-  `(${getTotalCostsByCKey(matrix, 'cMin')},${getTotalCostsByCKey(matrix)},${getTotalCostsByCKey(matrix, 'cMax')})`
-)
+  const getFullCostsForFuzzyData = (matrix = matrix) => (
+    `(${getTotalCostsByCKey(matrix, 'cMin')},${getTotalCostsByCKey(matrix)},${getTotalCostsByCKey(matrix, 'cMax')})`
+  )
   const getTotalCosts = (basePlan) => {
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
@@ -787,6 +789,10 @@ const getFullCostsForFuzzyData = (matrix=matrix) => (
     //   console.log('prevData, currrentData', prevData, currrentData)
     //   makeDeepOptimize(null, prevData, currrentData)
     // }
+
+
+    setMakeOptimize(true)
+    setStep(3)
   };
 
   useEffect(() => {
@@ -807,27 +813,37 @@ const getFullCostsForFuzzyData = (matrix=matrix) => (
       >
         Оптимизировать затраты 1 - {optimizedMatrixValue.costs}
       </Button>
+      {
+        makeOptimize
+          ?
+          (
+            <>
+              <Typography>
+                Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs}:
+              </Typography>
+              <ResaltTable
+                points={points}
+                matrix={optimizedMatrixValue.matrix}
+                name='значение'
+              />
+              {/* {console.log('#######', points, '#######')} */}
+              {/* {points.length ? */}
+              <PDF
+                matrix={matrix}
+                points={points}
+                fuzzyDataControl={fuzzyDataControl}
+                firstTotalCosts={firstTotalCosts}
+                firstDeviation={getTotalCosts(matrix)}
+                optimizedMatrixValue={optimizedMatrixValue}
+                optimizedMatrixFullCosts={getFullCostsForFuzzyData(optimizedMatrixValue.matrix)}
+              />
+            </>
+          )
+          :
+          ''
+      }
 
-      <Typography>
-        Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs}:
-    </Typography>
-      <ResaltTable
-        points={points}
-        matrix={optimizedMatrixValue.matrix}
-        name='значение'
-      />
-      {/* {console.log('#######', points, '#######')} */}
-      {/* {points.length ? */}
-        <PDF
-          matrix={matrix}
-          points={points}
-          fuzzyDataControl={fuzzyDataControl}
-          firstTotalCosts={firstTotalCosts}
-          firstDeviation ={ getTotalCosts(matrix)}
-          optimizedMatrixValue={optimizedMatrixValue}
-          optimizedMatrixFullCosts={getFullCostsForFuzzyData(optimizedMatrixValue.matrix)}
-        />
-{/* 
+      {/* 
         :
         ''
       } */}

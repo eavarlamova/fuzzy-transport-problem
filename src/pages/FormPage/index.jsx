@@ -7,12 +7,16 @@ import { setDataToLS, getDataFromLS } from '../../helpers/localStorage';
 import './index.scss';
 import PDF from './components/PDF';
 
+import StepperProgress from './components/StepperProgress';
+
 const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
   const [matrix, setMatrix] = useState([])
   // const [basePlan, setBasePlan] = useState([]);
   const [fuzzyDataControl, setFuzzyDataControl] = useState(false)
+  const [makeBasePlan, setMakeBasePlan] = useState(false);
+  const [step, setStep] = useState(0);
   // const matrix1 = [
   //   [{ x: 11, c: 11, cMin: 0, cMax:10, }, { x: 12, c: 12 }],
   //   [{ x: 21, c: 21 }, { x: 22, c: 22 }],
@@ -68,7 +72,17 @@ const FormPage = () => {
         matrix.every(itemRow =>
           itemRow.every(itemCol => typeof (itemCol.c) === 'number')
         ))
-  }, [matrix])
+  }, [matrix, fuzzyDataControl])
+
+  useEffect(()=>{
+    if(fullnestMatrix){
+      setStep(1)
+    }
+    else{
+      setStep(0)
+    }
+  },[fullnestMatrix])
+
 
   useEffect(() => {
     // console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
@@ -172,6 +186,8 @@ const FormPage = () => {
       })
     })
     setMatrix(updateMatrix);
+    setMakeBasePlan(true)
+    setStep(2);
   };
 
   const deletePoint = (key, indexForDelete) => {
@@ -194,19 +210,26 @@ const FormPage = () => {
     setFuzzyDataControl(!fuzzyDataControl)
   }
 
-  const totalBaseCost = useMemo(()=>{
+  const totalBaseCost = useMemo(() => {
     // console.log('#######', 'useMemo for total cost', '#######')
     return (
-    getTotalCosts(matrix)
-  )},[matrix])
+      getTotalCosts(matrix)
+    )
+  }, [matrix])
 
   return (
     <div className="form">
+      <StepperProgress step={step}>
+
+      </StepperProgress>
       <Grid
         container
         className="form__add"
         justify='space-around'
       >
+
+
+
         <AddingForm
           name='ПУНКТ ОТПРАВЛЕНИЯ'
           type='departure'
@@ -237,40 +260,52 @@ const FormPage = () => {
             deletePoint={deletePoint}
             fuzzyDataControl={fuzzyDataControl}
           />
-          {/* {fullnestMatrix ? */}
-          <Button
-            fullWidth
-            onClick={countBasePlan}
-          >
-            посчитать опорный план
+          {fullnestMatrix ?
+            <Button
+              fullWidth
+              onClick={countBasePlan}
+            >
+              посчитать опорный план
             </Button>
-          {/* :
+            :
             <Button
               fullWidth
               disabled
             >
               посчитать опорный план
             </Button>
-          } */}
-
-
-          ОПОРНЫЙ ПЛАН
+          }
+          {
+            makeBasePlan
+              ?
+              (
+                <>
+                  ОПОРНЫЙ ПЛАН
           <ResaltTable
-            points={points}
-            matrix={matrix}
-            name='значение'
-          />
+                    points={points}
+                    matrix={matrix}
+                    name='значение'
+                  />
           ОБЩИЕ ЗАТРТАТЫ - {totalBaseCost}
-{/* {console.log('#######', getTotalCosts(matrix), '#######')} */}
-          <SteppingStoneCount
-            matrix={matrix}
-            points={points}
-            fuzzyDataControl={fuzzyDataControl}
-            firstTotalCosts={totalBaseCost}
-          />
+                  {/* {console.log('#######', getTotalCosts(matrix), '#######')} */}
+                  <SteppingStoneCount
+                    matrix={matrix}
+                    points={points}
+                    fuzzyDataControl={fuzzyDataControl}
+                    firstTotalCosts={totalBaseCost}
+
+                    setStep={setStep}
+                  />
+                </>
+              )
+              :
+              ''
+          }
 
 
-         
+
+
+
         </Grid>
       </Grid>
     </div>
