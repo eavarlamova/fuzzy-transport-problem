@@ -1,3 +1,6 @@
+![alt text](img_for_readme/form-for-data.png "Basic form for adding ")​
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
