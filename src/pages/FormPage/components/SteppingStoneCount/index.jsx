@@ -812,6 +812,7 @@ const SteppingStoneCount = (props) => {
           matrix={matrix}
           points={points}
           fuzzyDataControl={fuzzyDataControl}
+          firstTotalCosts={firstTotalCosts}
         />
 {/* 
         :
