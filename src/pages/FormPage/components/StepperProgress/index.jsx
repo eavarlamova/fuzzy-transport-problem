@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Stepper, Step, StepLabel, Typography } from '@material-ui/core';
+import { Stepper, Step, StepLabel } from '@material-ui/core';
 import "../../index.scss";
 
 const StepperProgress = ({step}) => {

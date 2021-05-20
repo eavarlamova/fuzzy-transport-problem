@@ -195,12 +195,12 @@ const PDF = ({
           },
         },
         {
-          text: `Общие затраты по данному опорному плану - ${optimizedMatrixFullCosts}
+          text: `Общие затраты по данному опорному плану - ${fuzzyDataControl ? optimizedMatrixFullCosts : optimizedMatrixValue.costs}
           ${fuzzyDataControl
-            ?
-            `Величина отклонения по данному опорному плану - ${optimizedMatrixValue.costs}`
-            :
-            ''}
+              ?
+              `Величина отклонения по данному опорному плану - ${optimizedMatrixValue.costs}`
+              :
+              ''}
             `,
           margin: [30, 20, 0, 0],
           bold: true,
@@ -249,14 +249,30 @@ const PDF = ({
     pdfMake.createPdf(getDocumentContent(pageSize)).open()
   };
 
-
+const downloadPDF = () => {
+  const pageSize = colLength < 11 ? 'A4' : 'A3';
+  pdfMake.createPdf(getDocumentContent(pageSize)).download('SS-optimizetion.pdf')
+}
 
   return (
     <>
-      <Button onClick={openPDF}>
-        получить пдф
+      <Button
+        onClick={openPDF}
+        fullWidth
+        color='secondary'
+        variant="outlined"
+      >
+        смотреть pdf
         </Button>
 
+        <Button
+        onClick={downloadPDF}
+        fullWidth
+        color='secondary'
+        variant='contained'
+      >
+        скачать pdf
+        </Button>
 
     </>
   )
