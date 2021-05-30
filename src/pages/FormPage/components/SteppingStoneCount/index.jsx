@@ -620,7 +620,7 @@ const SteppingStoneCount = (props) => {
       ), 0)
     }, 0)
   );
-  const getFullCostsForFuzzyData = (matrix = matrix) => (
+  const getFullCostsForFuzzyData = (matrix = optimizedMatrixValue.matrix) => (
     `(${getTotalCostsByCKey(matrix, 'cMin')},${getTotalCostsByCKey(matrix)},${getTotalCostsByCKey(matrix, 'cMax')})`
   )
   const getTotalCosts = (basePlan) => {
@@ -879,7 +879,7 @@ if (valueForOptimizeTempMatrix) {
           (
             <>
               <Typography>
-                Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs}:
+                Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs} {getFullCostsForFuzzyData()}:
               </Typography>
               <ResaltTable
                 points={points}
