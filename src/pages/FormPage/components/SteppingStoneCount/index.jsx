@@ -2,6 +2,7 @@ import React, { memo, useEffect, useMemo, useState } from "react";
 import { Button, Typography } from "@material-ui/core";
 import ResaltTable from '../ResaltTable';
 import PDF from "../PDF";
+import Graph from "../Graph";
 
 const SteppingStoneCount = (props) => {
   const {
@@ -863,7 +864,7 @@ if (valueForOptimizeTempMatrix) {
     }
   }, [finish])
 
-
+  
 
   return (
     <>
@@ -887,6 +888,8 @@ if (valueForOptimizeTempMatrix) {
                 name='значение'
               />
               {/* {points.length ? */}
+              <Graph value={getFullCostsForFuzzyData()}/>
+
               <PDF
                 matrix={matrix}
                 points={points}
