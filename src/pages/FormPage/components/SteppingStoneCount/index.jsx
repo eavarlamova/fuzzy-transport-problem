@@ -21,7 +21,7 @@ const SteppingStoneCount = (props) => {
   const [finish, setFinish] = useState(false)
   const [makeOptimize, setMakeOptimize] = useState(false)
 
-  const getDeepClone = (currentMatrix = matrix) => JSON.parse(JSON.stringify(currentMatrix));
+  const getDeepClone = (currentMatrix = optimizedMatrixValue.matrix) => JSON.parse(JSON.stringify(currentMatrix));
   const getCorrectKeyForObjOfCoordinat = (key, numberOfCount) => (
     numberOfCount
       ?
@@ -403,6 +403,7 @@ const SteppingStoneCount = (props) => {
     else {
       // нет - значит надо найти следующие коордианты,
       // которые могут привести к появлянию финишной ячейки
+
       if (numberOfCount % 2 !== 0) {
         // \/ <-
         // +1
@@ -683,110 +684,118 @@ const SteppingStoneCount = (props) => {
   const kek = function makeDeepOptimize(event, currrentData = optimizedMatrixValue, someNewData = {}) {
     // const colCount = matrix[0].length;
     // let prevData = { ...optimizedMatrixValue }
+    // console.log('currrentData', currrentData)
     let prevData = getDeepClone(currrentData);
-    // console.log('#######', prevData, '#######')
     const matrix = prevData.matrix;
-    // console.log('matrix', matrix)
     const rowCount = matrix.length;
-    // console.log('prevData', prevData)
     let tempMatrix = getDeepClone(matrix);
 
+    try {
+      for (let row = 0; row < rowCount; row++) {
+        const currentRow = matrix[row];
 
-    for (let row = 0; row < rowCount; row++) {
-      const currentRow = matrix[row];
+        let haveFullX = false;
+        try {
+          for (let col = 0; col < currentRow.length; col++) {
+            let currentCell = currentRow[col];
+            haveFullX = haveFullX || Boolean(currentCell.x);
 
-      let haveFullX = false;
-      for (let col = 0; col < currentRow.length; col++) {
-        let currentCell = currentRow[col];
-        haveFullX = haveFullX || Boolean(currentCell.x);
+            let objOfCoordinat = {};
+            if (currentCell.x === 0) {
+              // мы нашли пустую клетку
+              tempMatrix[row][col].x = 1;
+              objOfCoordinat.original = [row, col];
+              try {
+                // ПОИСКА НЕПУСТЫХ ГРАНИЦ
+                if (haveFullX) {
+                  // ДЛЯ ВЕРХНЕГО УРОВНЯ МАТРИЦЫ 
+                  // ищем ближайщую НЕпустую клетку слева
+                  const {
+                    tempMatrix: newTempMatrixLeft,
+                    objOfCoordinat: newObjOfCoordinatLeft
+                  } = findLeftNotNullNearest(
+                    tempMatrix,
+                    objOfCoordinat,
+                  )
+                  tempMatrix = newTempMatrixLeft;
+                  objOfCoordinat = newObjOfCoordinatLeft;
 
-        let objOfCoordinat = {};
-        if (currentCell.x === 0) {
-          // мы нашли пустую клетку
-          tempMatrix[row][col].x = 1;
-          objOfCoordinat.original = [row, col];
+                  // ищем ближайщую НЕпустую клетку снизу
+                  const {
+                    tempMatrix: newTempMatrixBottom,
+                    objOfCoordinat: newObjOfCoordinatBottom
+                  } = findBottomNotNullNearest(
+                    tempMatrix,
+                    objOfCoordinat,
+                  )
+                  tempMatrix = newTempMatrixBottom;
+                  objOfCoordinat = newObjOfCoordinatBottom;
 
-          // ПОИСКА НЕПУСТЫХ ГРАНИЦ
-          if (haveFullX) {
-            // ДЛЯ ВЕРХНЕГО УРОВНЯ МАТРИЦЫ 
-            // ищем ближайщую НЕпустую клетку слева
-            const {
-              tempMatrix: newTempMatrixLeft,
-              objOfCoordinat: newObjOfCoordinatLeft
-            } = findLeftNotNullNearest(
-              tempMatrix,
-              objOfCoordinat,
-            )
-            tempMatrix = newTempMatrixLeft;
-            objOfCoordinat = newObjOfCoordinatLeft;
+                  manageUp(tempMatrix, objOfCoordinat)
+                }
+                else {
+                  // ДЛЯ НИЖНЕГО УРОВНЯ МАТРИЦЫ
+                  // ищем ближайщую НЕпустую клетку справа
+                  // тк нет справа никаких заполненных не 0 x
+                  const {
+                    tempMatrix: newTempMatrixRigth,
+                    objOfCoordinat: newObjOfCoordinatRigth
+                  } = findRigthNotNullNearest(
+                    tempMatrix,
+                    objOfCoordinat
+                  );
+                  tempMatrix = newTempMatrixRigth;
+                  objOfCoordinat = newObjOfCoordinatRigth;
 
-            // ищем ближайщую НЕпустую клетку снизу
-            const {
-              tempMatrix: newTempMatrixBottom,
-              objOfCoordinat: newObjOfCoordinatBottom
-            } = findBottomNotNullNearest(
-              tempMatrix,
-              objOfCoordinat,
-            )
-            tempMatrix = newTempMatrixBottom;
-            objOfCoordinat = newObjOfCoordinatBottom;
+                  // ищем ближайщую НЕпустую клетку сверху
+                  // тк у нас нет впереди значений, то поиск по оси ОУ будет вверх
+                  const {
+                    tempMatrix: newTempMatrixTop,
+                    objOfCoordinat: newObjOfCoordinatTop
+                  } = findTopNotNullNearest(
+                    tempMatrix,
+                    objOfCoordinat
+                  );
+                  tempMatrix = newTempMatrixTop;
+                  objOfCoordinat = newObjOfCoordinatTop;
 
-            manageUp(tempMatrix, objOfCoordinat)
-          }
-          else {
-            // ДЛЯ НИЖНЕГО УРОВНЯ МАТРИЦЫ
-            // ищем ближайщую НЕпустую клетку справа
-            // тк нет справа никаких заполненных не 0 x
-            const {
-              tempMatrix: newTempMatrixRigth,
-              objOfCoordinat: newObjOfCoordinatRigth
-            } = findRigthNotNullNearest(
-              tempMatrix,
-              objOfCoordinat
-            );
-            tempMatrix = newTempMatrixRigth;
-            objOfCoordinat = newObjOfCoordinatRigth;
-
-            // ищем ближайщую НЕпустую клетку сверху
-            // тк у нас нет впереди значений, то поиск по оси ОУ будет вверх
-            const {
-              tempMatrix: newTempMatrixTop,
-              objOfCoordinat: newObjOfCoordinatTop
-            } = findTopNotNullNearest(
-              tempMatrix,
-              objOfCoordinat
-            );
-            tempMatrix = newTempMatrixTop;
-            objOfCoordinat = newObjOfCoordinatTop;
-
-            manageDown(tempMatrix, objOfCoordinat);
+                  manageDown(tempMatrix, objOfCoordinat);
+                }
+              }
+              catch (err) {
+                console.log('#######', 'ERROR IN IF', '#######')
+                // continue
+                break
+              }
+            }
+            const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
+            console.log('objOfCoordinat', objOfCoordinat.finish,objOfCoordinat)
+            if (valueForOptimizeTempMatrix) {
+              // он будет только для 0 ячеек , иначе андефайнд
+              // надо вычислить общие затртары по оптимизированной матрице
+              prevData = changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
+            }
+            tempMatrix = getDeepClone();
           }
         }
-        const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
-        if (valueForOptimizeTempMatrix) {
-          // он будет только для 0 ячеек , иначе андефайнд
-          // надо вычислить общие затртары по оптимизированной матрице
-          prevData = changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
-        }
-        tempMatrix = getDeepClone();
-      }
+        catch (err) {
+          console.log('#######', 'COL ERROR', '#######')
+          continue;
 
-      // console.log('optimizedMatrixValue.costs', someNewData.costs)
-      // console.log('prevData.costs', prevData.costs)
-      if (prevData.costs !== someNewData.costs) {
-        setOptimizedMatrixValue(prevData)
-        // setFinish(true)
-        // console.log('#######', 'HERE', '#######')
-        // console.log('prevData', prevData)
-        // makeDeepOptimize(null, prevData)
-        // makeDeepOptimize()
-        // recursive
+        }
+        if (prevData.costs !== someNewData.costs) {
+          setOptimizedMatrixValue(prevData)
+          // setFinish(true)
+          // makeDeepOptimize(null, prevData)
+          // makeDeepOptimize()
+          // recursive
+        }
       }
     }
-
-    console.log('data', prevData.costs, currrentData.costs)
+    catch (err) {
+      console.error('#######', 'ERROR IN KEK', '#######')
+    }
     // if (prevData.costs !== someNewData.costs) {
-    //   console.log('prevData, currrentData', prevData, currrentData)
     //   makeDeepOptimize(null, prevData, currrentData)
     // }
 
@@ -796,9 +805,7 @@ const SteppingStoneCount = (props) => {
   };
 
   useEffect(() => {
-    console.log('finish', finish)
     if (finish) {
-      // console.log('finish', finish)
       kek()
     }
   }, [finish])
@@ -826,7 +833,6 @@ const SteppingStoneCount = (props) => {
                 matrix={optimizedMatrixValue.matrix}
                 name='значение'
               />
-              {/* {console.log('#######', points, '#######')} */}
               {/* {points.length ? */}
               <PDF
                 matrix={matrix}

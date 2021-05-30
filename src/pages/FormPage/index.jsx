@@ -75,7 +75,7 @@ const FormPage = () => {
   }, [matrix, fuzzyDataControl])
 
   useEffect(() => {
-    if (fullnestMatrix && ( points.departure.length>1 || points.destination.length>1)) {
+    if (fullnestMatrix && (points.departure.length > 1 || points.destination.length > 1)) {
       setStep(1)
     }
     else {
@@ -86,11 +86,9 @@ const FormPage = () => {
 
 
   useEffect(() => {
-    // console.log('getDataFromLS(matrix)', getDataFromLS('matrix'))
     const newMatrix = getDataFromLS('matrix') || [];
     const newPoints = getDataFromLS('points') || { departure: [], destination: [] };
     const newFuzzyDataControl = getDataFromLS('fuzzyDataControl' || false)
-    // console.log('newMatrix in useEffect', newMatrix)
     setMatrix(newMatrix);
     setPoints(newPoints);
     setFuzzyDataControl(newFuzzyDataControl);
