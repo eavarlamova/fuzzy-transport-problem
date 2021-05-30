@@ -59,6 +59,11 @@ const SteppingStoneCount = (props) => {
     // }
     // console.log('#######', optimizedMatrixValue.matrix, '#######')
     // console.log('tempMatrix in getValueForOptimize', tempMatrix)
+    
+    // пофиксить поиск ближней границы ! поиск идет некоррекнто
+    //   if(objOfCoordinat.original[0]===4 && objOfCoordinat.original[1]===3 ){
+    //     console.log('objOfCoordinat',objOfCoordinat )
+    //   }
     if (objOfCoordinat.original) {
 
       let setOfCoordinat = new Set();
@@ -68,7 +73,6 @@ const SteppingStoneCount = (props) => {
         let value = objOfCoordinat[key].toString();
         setOfCoordinat.add(value)
       }
-      console.log('objOfCoordinat in getValue', objOfCoordinat.finish)
 // console.log('optimizedMatrixValue.matrix', optimizedMatrixValue.matrix)
       for (const coordinate of setOfCoordinat) {
         const [row, col] = coordinate.split(',')
@@ -114,6 +118,7 @@ const SteppingStoneCount = (props) => {
     const nextCoordinatName = `O${key}${numberOfCount + 1}`;
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
+    const matrix = optimizedMatrixValue.matrix
 
     for (let leftCol = col - 1; leftCol >= 0; leftCol--) {
       if (matrix[row][leftCol].x !== 0) {
@@ -187,6 +192,7 @@ const SteppingStoneCount = (props) => {
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
     const rowLength = tempMatrix.length;
+    const matrix = optimizedMatrixValue.matrix
 
     for (let bottomRow = row + 1; bottomRow < rowLength; bottomRow++) {
       if (matrix[bottomRow][col].x) {
@@ -252,6 +258,7 @@ const SteppingStoneCount = (props) => {
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
     const colLength = tempMatrix[0].length;
+    const matrix = optimizedMatrixValue.matrix
 
     for (let rigthCol = row + 1; rigthCol < colLength; rigthCol++) {
       if (matrix[row][rigthCol].x) {
@@ -317,8 +324,11 @@ const SteppingStoneCount = (props) => {
     const nextCoordinatName = `O${key}${numberOfCount + 1}`;
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
-
+    // console.log('currentCellCoordinate', currentCellCoordinate)
+    const matrix = optimizedMatrixValue.matrix
     for (let topRow = row - 1; topRow >= 0; topRow--) {
+      // for (let topRow = row - 1; topRow >= 0; topRow--) {
+// console.log('topRow', topRow)
       if (matrix[topRow][col].x) {
         tempMatrix[topRow][col].x--;
         objOfCoordinat[nextCoordinatName] = [topRow, col];
@@ -503,7 +513,6 @@ const SteppingStoneCount = (props) => {
     ][
       objOfCoordinat[`OX${numberOfCount}`][1]
     ]
-console.log('tempMatrix', tempMatrix)
 
     if (finishCell.x) {
       // есть - значит надо добавить единицу, чтоб уровнять
@@ -687,7 +696,7 @@ console.log('tempMatrix', tempMatrix)
     prevData,
   ) => {
     const optimizedMatrix = getDeepClone()
-    console.log('#######', tempMatrix, '#######')
+    // console.log('#######', tempMatrix, '#######')
     const minValueX = getMinValueFromMinusOne(setOfCoordinat, tempMatrix)
     const matrix = optimizedMatrixValue.matrix
     // console.log('matrix', matrix)
@@ -734,12 +743,14 @@ console.log('tempMatrix', tempMatrix)
             // console.log('row+1, col+1', row+1, col+1)
             let currentCell = currentRow[col];
             haveFullX = haveFullX || Boolean(currentCell.x);
+// console.log('row+1, col+1',row+1, col+1)
 
             let objOfCoordinat = {};
             if (currentCell.x === 0) {
               // мы нашли пустую клетку
               tempMatrix[row][col].x = 1;
               objOfCoordinat.original = [row, col];
+          
               try {
                 // ПОИСКА НЕПУСТЫХ ГРАНИЦ
                 normalObjOfCoordinat = getDeepClone(objOfCoordinat);
@@ -801,6 +812,7 @@ console.log('tempMatrix', tempMatrix)
               catch (err) {
                 console.error('#######', 'ERROR IN IF', '#######')
 // console.log('#######', err, '#######')
+// console.log('#######', row+1,col+1, '#######')
 objOfCoordinat = {...normalObjOfCoordinat, finish: null};
                 tempMatrix = normalTempMatrix;
                 // если не прошло проверку, то надо ресетнуть матрицу, чтоб не было минусов и плбсов
