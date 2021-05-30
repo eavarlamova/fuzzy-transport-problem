@@ -57,6 +57,8 @@ const SteppingStoneCount = (props) => {
     // finish: (2) [1, 5]
     // original: (2) [0, 7]
     // }
+    // console.log('#######', optimizedMatrixValue.matrix, '#######')
+    // console.log('tempMatrix in getValueForOptimize', tempMatrix)
     if (objOfCoordinat.original) {
 
       let setOfCoordinat = new Set();
@@ -66,11 +68,16 @@ const SteppingStoneCount = (props) => {
         let value = objOfCoordinat[key].toString();
         setOfCoordinat.add(value)
       }
-
+      console.log('objOfCoordinat in getValue', objOfCoordinat.finish)
+// console.log('optimizedMatrixValue.matrix', optimizedMatrixValue.matrix)
       for (const coordinate of setOfCoordinat) {
         const [row, col] = coordinate.split(',')
+        // console.log('tempMatrix[row][col].x ', tempMatrix[row][col].x )
+
+        // !!! ТуТ НЕ ДОЛЖНО ПОЛУЧАТЬСЯ МИНУС 1
+        // ПОСМОТеть КООРДИНАТЫ
         const mathSign =
-          tempMatrix[row][col].x > matrix[row][col].x
+          tempMatrix[row][col].x > optimizedMatrixValue.matrix[row][col].x
             ?
             +1
             :
@@ -83,6 +90,7 @@ const SteppingStoneCount = (props) => {
       return ({
         setOfCoordinat,
         tempMatrix,
+        // objOfCoordinat,
       });
     }
   }
@@ -137,8 +145,13 @@ const SteppingStoneCount = (props) => {
     const nextCoordinatName = `O${key}${numberOfCount + 1}`;
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
-
-    for (let leftCol = 0; leftCol < col; leftCol++) {
+    // надо найти столбец 
+    // const colStart = objOfCoordinat['OX1'][1]
+    // leftCol ->  
+    const colEnd = objOfCoordinat['OX1'][1]
+    const colStart = objOfCoordinat['OY1'][1]
+    for (let leftCol = colStart; leftCol < colEnd; leftCol++) {
+      // for (let leftCol = 0; leftCol < col; leftCol++) {
       if (matrix[row][leftCol].x) {
         if (mathSigh === '+') {
           tempMatrix[row][leftCol].x++;
@@ -202,9 +215,12 @@ const SteppingStoneCount = (props) => {
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
     const rowLength = tempMatrix.length;
-
-    for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
-
+    // bottomRowStart = y1[0]
+    const bottomRowStart = objOfCoordinat['OY1'][0]
+    const rowStart = objOfCoordinat['OX1'][0]
+    const endRow = objOfCoordinat['OY1'][0]
+    for (let bottomRow = rowStart; bottomRow > endRow; bottomRow--) {
+    // for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
       if (matrix[bottomRow][col].x) {
         if (mathSign === '+') {
           tempMatrix[bottomRow][col].x++;
@@ -262,8 +278,12 @@ const SteppingStoneCount = (props) => {
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
     const colLength = tempMatrix[0].length;
-
-    for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
+    // colEnd =
+    const colEnd = objOfCoordinat['OY1'][1]
+    // colStatrt =
+    const colStatrt = objOfCoordinat['OX1'][1]
+    for (let rigthCol = colStatrt; rigthCol > colEnd; rigthCol--) {
+      // for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
       if (matrix[row][rigthCol].x) {
         if (mathSign === '-') {
           tempMatrix[row][rigthCol].x--;
@@ -323,7 +343,10 @@ const SteppingStoneCount = (props) => {
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
 
-    for (let topRow = 0; topRow < row; topRow++) {
+    const startRow = objOfCoordinat['OY1'][0]
+    for (let topRow = startRow; topRow < row; topRow++) {
+      // for (let topRow = 0; topRow < row; topRow++) {
+
       if (matrix[topRow][col].x) {
         if (mathSigh === '-') {
           tempMatrix[topRow][col].x--;
@@ -370,7 +393,6 @@ const SteppingStoneCount = (props) => {
     ][
       objOfCoordinat[`OX${numberOfCount}`][1]
     ]
-
     // проверить есть ли завершающая координата
     if (finishCell.x) {
       // есть - значит надо добавить единицу, чтоб уровнять
@@ -481,6 +503,8 @@ const SteppingStoneCount = (props) => {
     ][
       objOfCoordinat[`OX${numberOfCount}`][1]
     ]
+console.log('tempMatrix', tempMatrix)
+
     if (finishCell.x) {
       // есть - значит надо добавить единицу, чтоб уровнять
       // матрицу и завершить цикл
@@ -626,6 +650,8 @@ const SteppingStoneCount = (props) => {
     setOfCoordinat,
     tempMatrix) => {
     let minValues = [];
+    const matrix = optimizedMatrixValue.matrix
+    // console.log('matrix in getMinValueFromMinusOne', matrix)
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
       if (tempMatrix[row][col].x < matrix[row][col].x) {
@@ -661,14 +687,19 @@ const SteppingStoneCount = (props) => {
     prevData,
   ) => {
     const optimizedMatrix = getDeepClone()
+    console.log('#######', tempMatrix, '#######')
     const minValueX = getMinValueFromMinusOne(setOfCoordinat, tempMatrix)
     const matrix = optimizedMatrixValue.matrix
     // console.log('matrix', matrix)
     // console.log('optimizedMatrixValue.matrix',optimizedMatrixValue.matrix )
+    // console.log('tempMatrix in MIN-VAL', tempMatrix)
+    // console.log('matrix in CHANGE', matrix)
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
       if (tempMatrix[row][col].x < matrix[row][col].x) {
         // то надо отнять мин число
+        const currentX = optimizedMatrix[row][col].x;
+        const newValue=currentX- minValueX;
         optimizedMatrix[row][col].x = optimizedMatrix[row][col].x - minValueX
       }
       else {
@@ -695,8 +726,12 @@ const SteppingStoneCount = (props) => {
         const currentRow = matrix[row];
 
         let haveFullX = false;
+
         try {
+          const normalTempMatrix = getDeepClone(tempMatrix);
+          let  normalObjOfCoordinat = {};
           for (let col = 0; col < currentRow.length; col++) {
+            // console.log('row+1, col+1', row+1, col+1)
             let currentCell = currentRow[col];
             haveFullX = haveFullX || Boolean(currentCell.x);
 
@@ -707,6 +742,7 @@ const SteppingStoneCount = (props) => {
               objOfCoordinat.original = [row, col];
               try {
                 // ПОИСКА НЕПУСТЫХ ГРАНИЦ
+                normalObjOfCoordinat = getDeepClone(objOfCoordinat);
                 if (haveFullX) {
                   // ДЛЯ ВЕРХНЕГО УРОВНЯ МАТРИЦЫ 
                   // ищем ближайщую НЕпустую клетку слева
@@ -730,7 +766,7 @@ const SteppingStoneCount = (props) => {
                   )
                   tempMatrix = newTempMatrixBottom;
                   objOfCoordinat = newObjOfCoordinatBottom;
-
+// console.log('#######', 'here is manageUP', '#######')
                   manageUp(tempMatrix, objOfCoordinat)
                 }
                 else {
@@ -763,14 +799,18 @@ const SteppingStoneCount = (props) => {
                 }
               }
               catch (err) {
-                console.log('#######', 'ERROR IN IF', '#######')
-                // continue
+                console.error('#######', 'ERROR IN IF', '#######')
+// console.log('#######', err, '#######')
+objOfCoordinat = {...normalObjOfCoordinat, finish: null};
+                tempMatrix = normalTempMatrix;
+                // если не прошло проверку, то надо ресетнуть матрицу, чтоб не было минусов и плбсов
                 break
+                // continue
               }
             }
             const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
-            console.log('objOfCoordinat', objOfCoordinat.finish,objOfCoordinat)
-            if (valueForOptimizeTempMatrix) {
+// console.log('objOfCoordinat.finish', objOfCoordinat.finish, 'for',objOfCoordinat.original )
+if (valueForOptimizeTempMatrix) {
               // он будет только для 0 ячеек , иначе андефайнд
               // надо вычислить общие затртары по оптимизированной матрице
               prevData = changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
@@ -779,6 +819,7 @@ const SteppingStoneCount = (props) => {
           }
         }
         catch (err) {
+          // console.log('err', err)
           console.log('#######', 'COL ERROR', '#######')
           continue;
 
