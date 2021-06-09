@@ -29,6 +29,7 @@ const FormPage = () => {
   //     destination: [{ name: 'ПH 1' }, { name: 'ПH 2' }, { name: 'ПH 3' }]
   //   })
   // }, [])
+  const getDeviationsForFuzzyData = ({ min, normal, max }) => ((2 * Number(normal) + Number(min) + Number(max)) / 2);
 
   const getCorrectNumberValue = (matrixArray, indexRow, indexCol, key) => (
     matrixArray[indexRow]
@@ -107,7 +108,6 @@ const FormPage = () => {
   }, [fuzzyDataControl])
 
   const handleChange = (value, name, typeOfKey) => {
-    // console.log('handleChange', value, name, typeOfKey)
     setCurrentPoint({
       ...currentPoint,
       [name]: {
@@ -120,9 +120,7 @@ const FormPage = () => {
   const handleChangePrice = (departureNumber, destinationNumder, newValue, key = 'c') => {
     const newMatrix = [...matrix]
     newValue = newValue.trim().replace(/\D/g, '');
-    // newMatrix[departureNumber][destinationNumder].c = newValue ? Number(newValue) : null
     newMatrix[departureNumber][destinationNumder][key] = newValue ? Number(newValue) : null;
-    // console.log('newMatrix', newMatrix)
     setMatrix(newMatrix)
   };
 
@@ -169,8 +167,6 @@ const FormPage = () => {
 
     // updateMatrix - is a matrix with base plan and costs
     const updateMatrix = matrix.map((item, indexRow) => {
-      // let priceRow = Number(points.departure.quality);
-      // let priceCol = Number(points.destination.quality);
       return item.map((item, indexCol) => {
         let priceRow = allPriceRow[indexRow];
         let priceCol = allPriceCol[indexCol];
@@ -207,14 +203,30 @@ const FormPage = () => {
   };
   const setFuzzyInput = () => {
     setFuzzyDataControl(!fuzzyDataControl)
+    setMakeBasePlan(false )
   }
 
   const totalBaseCost = useMemo(() => {
-    // console.log('#######', 'useMemo for total cost', '#######')
     return (
       getTotalCosts(matrix)
     )
   }, [matrix])
+
+  const totalD = useMemo(()=>{
+    if(fuzzyDataControl){
+
+      const lengthOfTotalBasePlan = totalBaseCost.length
+      const arrayOfNumber = totalBaseCost.substring(1,lengthOfTotalBasePlan-1).split(', ');
+      
+      const result =getDeviationsForFuzzyData({
+        min: (arrayOfNumber[0]),
+        normal: arrayOfNumber[1],
+        max: arrayOfNumber[2]
+      })
+      return result
+    }
+    return ''
+  }, [totalBaseCost])
 
   return (
     <div className="form">
@@ -297,8 +309,14 @@ const FormPage = () => {
                     matrix={matrix}
                     name='значение'
                   />
-          ОБЩИЕ ЗАТРТАТЫ - {totalBaseCost}
-                  {/* {console.log('#######', getTotalCosts(matrix), '#######')} */}
+          ОБЩИЕ ЗАТРТАТЫ - {totalBaseCost} 
+          <br/>
+          {fuzzyDataControl 
+          ?
+          `ВЕЛИЧИНА ОТКЛОНЕНИЯ -  ${totalD}`
+        :
+        ''
+        }
                   <SteppingStoneCount
                     matrix={matrix}
                     points={points}

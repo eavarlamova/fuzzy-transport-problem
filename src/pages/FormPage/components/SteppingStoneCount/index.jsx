@@ -60,7 +60,7 @@ const SteppingStoneCount = (props) => {
     // }
     // console.log('#######', optimizedMatrixValue.matrix, '#######')
     // console.log('tempMatrix in getValueForOptimize', tempMatrix)
-    
+
     // пофиксить поиск ближней границы ! поиск идет некоррекнто
     //   if(objOfCoordinat.original[0]===4 && objOfCoordinat.original[1]===3 ){
     //     console.log('objOfCoordinat',objOfCoordinat )
@@ -74,7 +74,7 @@ const SteppingStoneCount = (props) => {
         let value = objOfCoordinat[key].toString();
         setOfCoordinat.add(value)
       }
-// console.log('optimizedMatrixValue.matrix', optimizedMatrixValue.matrix)
+      // console.log('optimizedMatrixValue.matrix', optimizedMatrixValue.matrix)
       for (const coordinate of setOfCoordinat) {
         const [row, col] = coordinate.split(',')
         // console.log('tempMatrix[row][col].x ', tempMatrix[row][col].x )
@@ -227,7 +227,7 @@ const SteppingStoneCount = (props) => {
     const rowStart = objOfCoordinat['OX1'][0]
     const endRow = objOfCoordinat['OY1'][0]
     for (let bottomRow = rowStart; bottomRow > endRow; bottomRow--) {
-    // for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
+      // for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
       if (matrix[bottomRow][col].x) {
         if (mathSign === '+') {
           tempMatrix[bottomRow][col].x++;
@@ -329,7 +329,7 @@ const SteppingStoneCount = (props) => {
     const matrix = optimizedMatrixValue.matrix
     for (let topRow = row - 1; topRow >= 0; topRow--) {
       // for (let topRow = row - 1; topRow >= 0; topRow--) {
-// console.log('topRow', topRow)
+      // console.log('topRow', topRow)
       if (matrix[topRow][col].x) {
         tempMatrix[topRow][col].x--;
         objOfCoordinat[nextCoordinatName] = [topRow, col];
@@ -706,10 +706,12 @@ const SteppingStoneCount = (props) => {
     // console.log('matrix in CHANGE', matrix)
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
+      // console.log('tempMatrix[row][col].x', tempMatrix[row][col].x)
+      // // console.log('matrix[row][col].x', matrix[row][col].x)
       if (tempMatrix[row][col].x < matrix[row][col].x) {
         // то надо отнять мин число
         const currentX = optimizedMatrix[row][col].x;
-        const newValue=currentX- minValueX;
+        const newValue = currentX - minValueX;
         optimizedMatrix[row][col].x = optimizedMatrix[row][col].x - minValueX
       }
       else {
@@ -717,7 +719,6 @@ const SteppingStoneCount = (props) => {
         optimizedMatrix[row][col].x = optimizedMatrix[row][col].x + minValueX
       }
     };
-
     prevData = checkOptimizedPlan(optimizedMatrix, prevData)
     return prevData
   };
@@ -725,7 +726,8 @@ const SteppingStoneCount = (props) => {
   const kek = function makeDeepOptimize(event, currrentData = optimizedMatrixValue, someNewData = {}) {
     // const colCount = matrix[0].length;
     // let prevData = { ...optimizedMatrixValue }
-    // console.log('currrentData', currrentData)
+    setFinish(false)
+
     let prevData = getDeepClone(currrentData);
     const matrix = prevData.matrix;
     const rowCount = matrix.length;
@@ -739,19 +741,17 @@ const SteppingStoneCount = (props) => {
 
         try {
           const normalTempMatrix = getDeepClone(tempMatrix);
-          let  normalObjOfCoordinat = {};
+          let normalObjOfCoordinat = {};
           for (let col = 0; col < currentRow.length; col++) {
-            // console.log('row+1, col+1', row+1, col+1)
             let currentCell = currentRow[col];
             haveFullX = haveFullX || Boolean(currentCell.x);
-// console.log('row+1, col+1',row+1, col+1)
 
             let objOfCoordinat = {};
             if (currentCell.x === 0) {
               // мы нашли пустую клетку
               tempMatrix[row][col].x = 1;
               objOfCoordinat.original = [row, col];
-          
+
               try {
                 // ПОИСКА НЕПУСТЫХ ГРАНИЦ
                 normalObjOfCoordinat = getDeepClone(objOfCoordinat);
@@ -778,7 +778,6 @@ const SteppingStoneCount = (props) => {
                   )
                   tempMatrix = newTempMatrixBottom;
                   objOfCoordinat = newObjOfCoordinatBottom;
-// console.log('#######', 'here is manageUP', '#######')
                   manageUp(tempMatrix, objOfCoordinat)
                 }
                 else {
@@ -812,18 +811,14 @@ const SteppingStoneCount = (props) => {
               }
               catch (err) {
                 console.error('#######', 'ERROR IN IF', '#######')
-// console.log('#######', err, '#######')
-// console.log('#######', row+1,col+1, '#######')
-objOfCoordinat = {...normalObjOfCoordinat, finish: null};
+                objOfCoordinat = { ...normalObjOfCoordinat, finish: null };
                 tempMatrix = normalTempMatrix;
                 // если не прошло проверку, то надо ресетнуть матрицу, чтоб не было минусов и плбсов
                 break
-                // continue
               }
             }
             const valueForOptimizeTempMatrix = getValueForOptimizeTempMatrix(tempMatrix, objOfCoordinat)
-// console.log('objOfCoordinat.finish', objOfCoordinat.finish, 'for',objOfCoordinat.original )
-if (valueForOptimizeTempMatrix) {
+            if (valueForOptimizeTempMatrix) {
               // он будет только для 0 ячеек , иначе андефайнд
               // надо вычислить общие затртары по оптимизированной матрице
               prevData = changeMatrixForOptimized(valueForOptimizeTempMatrix, prevData)
@@ -837,6 +832,8 @@ if (valueForOptimizeTempMatrix) {
           continue;
 
         }
+        // console.log('prevData.costs', prevData.costs)
+        // console.log('someNewData.costs', someNewData.costs)
         if (prevData.costs !== someNewData.costs) {
           setOptimizedMatrixValue(prevData)
           // setFinish(true)
@@ -849,22 +846,21 @@ if (valueForOptimizeTempMatrix) {
     catch (err) {
       console.error('#######', 'ERROR IN KEK', '#######')
     }
-    // if (prevData.costs !== someNewData.costs) {
-    //   makeDeepOptimize(null, prevData, currrentData)
-    // }
 
-
+// if()
+// setFinish(true)
     setMakeOptimize(true)
     setStep(3)
   };
 
   useEffect(() => {
     if (finish) {
+      // console.log('#######', 'use effect TRUE', '#######')
       kek()
     }
   }, [finish])
 
-  
+
 
   return (
     <>
@@ -872,7 +868,7 @@ if (valueForOptimizeTempMatrix) {
         fullWidth
         onClick={kek}
       >
-        Оптимизировать затраты 1 - {optimizedMatrixValue.costs}
+        Оптимизировать затраты - {optimizedMatrixValue.costs}
       </Button>
       {
         makeOptimize
@@ -888,7 +884,7 @@ if (valueForOptimizeTempMatrix) {
                 name='значение'
               />
               {/* {points.length ? */}
-              <Graph value={getFullCostsForFuzzyData()}/>
+              <Graph value={getFullCostsForFuzzyData()} />
 
               <PDF
                 matrix={matrix}
