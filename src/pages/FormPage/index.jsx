@@ -212,7 +212,7 @@ const FormPage = () => {
     )
   }, [matrix])
 
-  const totalD = useMemo(()=>{
+  const totalDeviation = useMemo(()=>{
     if(fuzzyDataControl){
 
       const lengthOfTotalBasePlan = totalBaseCost.length
@@ -313,7 +313,7 @@ const FormPage = () => {
           <br/>
           {fuzzyDataControl 
           ?
-          `ВЕЛИЧИНА ОТКЛОНЕНИЯ -  ${totalD}`
+          `ВЕЛИЧИНА ОТКЛОНЕНИЯ -  ${totalDeviation}`
         :
         ''
         }

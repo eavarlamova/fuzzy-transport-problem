@@ -876,15 +876,18 @@ const SteppingStoneCount = (props) => {
           (
             <>
               <Typography>
-                Самый оптимальный вариант c затратами в {optimizedMatrixValue.costs} {getFullCostsForFuzzyData()}:
+                Самый оптимальный вариант c затратами в {getFullCostsForFuzzyData()} и величиной отклонения  {optimizedMatrixValue.costs} 
               </Typography>
               <ResaltTable
                 points={points}
                 matrix={optimizedMatrixValue.matrix}
                 name='значение'
               />
-              {/* {points.length ? */}
+              {fuzzyDataControl? 
               <Graph value={getFullCostsForFuzzyData()} />
+            :
+            ''  
+            }
 
               <PDF
                 matrix={matrix}
