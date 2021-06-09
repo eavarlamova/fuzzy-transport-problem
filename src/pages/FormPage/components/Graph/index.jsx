@@ -48,7 +48,7 @@ const Graph = ({ value }) => {
 return (
         <div id="chart-my">
             <div className='chart'>
-                <h4 className='title'>Line Chart for optimize matrix</h4>
+                <h4 className='title'>  ВЕЛИЧИНА ОБЩИХ ЗАТРАТ В ВИДЕ НЕЧЕТКОГО ТРЕУГОЛЬНОГО ЧИСЛА</h4>
             </div>
             <Line data={data} options={options} />
         </div>
