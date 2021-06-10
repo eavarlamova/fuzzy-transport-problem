@@ -1,7 +1,16 @@
-import { Table, TableHead, TableCell, TableBody, TableRow, Input, Tooltip } from "@material-ui/core";
-import { HighlightOffSharp } from "@material-ui/icons";
 import { memo } from "react";
+import { HighlightOffSharp } from "@material-ui/icons";
+import { 
+  Input, 
+  Table, 
+  Tooltip,
+  TableRow, 
+  TableBody, 
+  TableHead, 
+  TableCell, 
+ } from "@material-ui/core";
 import "../../index.scss"
+
 const ResultTable = (props) => {
   const {
     points,
@@ -90,14 +99,11 @@ const ResultTable = (props) => {
                                   placeholder={`введите ${name} перевозки 1единицы`}
                                 />
                             }
-
                           </Tooltip>
                           :
                           item.x
                       }
                     </TableCell>
-
-
                   ))}
                   <TableCell className="table_quality" >
                     {points.departure[indexRow].quality}
@@ -118,19 +124,8 @@ const ResultTable = (props) => {
               {points.destination.reduce((acc,item)=>(acc=acc+Number(item.quality)),0)}
             </TableCell>
           </TableRow>
-          {/* <TableRow>
-            <TableCell>
-
-            </TableCell>
-          </TableRow> */}
         </TableBody>
       </Table>
-      {/*       
-      {
-        points.destination.map(({ name, quality }) => (
-          <li> {name} - {quality} </li>
-        )) || ''
-      } */}
     </>
   )
 };

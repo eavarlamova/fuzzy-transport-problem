@@ -1,10 +1,9 @@
+import { memo, useMemo, } from "react";
 import pdfMake from "pdfmake/build/pdfmake";
+import * as htmlToImage from 'html-to-image';
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
 import { Button } from "@material-ui/core";
-import { memo, useMemo, useEffect } from "react";
-import { getDataFromLS } from "../../../../helpers/localStorage";
-import * as htmlToImage from 'html-to-image';
 
 const PDF = ({
   matrix,
@@ -16,44 +15,12 @@ const PDF = ({
   optimizedMatrixFullCosts,
   image,
 }) => {
-  let imageForPDF = '';
-  // useEffect(()=>{
-  // getImgGraph()
-  // },[matrix])
-  // const getImgGraph = async () => {
-  //   let img = null;
-  //   try {
-  //     // создание имг из графа
-  //     const pathForGraph = document.getElementById('chart-my')
-  //     const ima_url = await htmlToImage.toPng(pathForGraph)
-  //     img = new Image();
-  //     // img.src = ima_url;
-  //     // document.body.appendChild(img);
-  //     // .then(function (dataUrl) {
-  //     //   var img = new Image();
-  //     //   img.src = dataUrl;
-  //     //   document.body.appendChild(img);
-  //     // })
-  //     // .catch(function (error) {
-  //     //   console.error('oops, something went wrong!', error);
-  //     // });
-  //     // console.log('img', img)
-  //     // console.log('ima_url', ima_url)
-  //     imageForPDF = ima_url
-  //     return ima_url;
-  //   }
-  //   catch (err) {
-  //     console.error('ОШИБКА С ГЕНЕРАЦИЕЙ КАРТИНКИ')
-  //   }
-
-  // }
 
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const getSum = (array) => (
     array.reduce((acc, { quality }) => (acc = acc + Number(quality)), 0)
   )
   const getTable = (currentMatrix = matrix, key = 'c') => {
-
     // формирование первой строки таблицы
     // формирование последней строки таблицы
     const firstRow = [{ text: `ПО \\ ПН`, bold: true }];
@@ -86,17 +53,10 @@ const PDF = ({
         { text: `${points.departure[indexRow].quality}` },
       ];
     })
-
-
-
-
-
     return [firstRow, ...bodyRows, lastRow];
-
   }
 
   const colWidths = useMemo(() => {
-    // console.log('points', points.destination)
     return [
       ...points.destination.map(() => '*'),
       '*',
@@ -111,7 +71,6 @@ const PDF = ({
 
 
   const getDocumentContent = (pageSize = 'A4', img_url) => {
-    // console.log('imageForPDF', imageForPDF)
     if (fuzzyDataControl) {
       return (
         {
@@ -125,12 +84,6 @@ const PDF = ({
           pageSize: pageSize,
           pageOrientation: 'landscape', //'portrait'
           pageMargins: [50, 50, 50, 50],
-
-          // header: [
-          //   {
-          //     text: 'внимание'
-          //   },
-          // ],
 
           content: [
             // титульный лист
@@ -153,8 +106,6 @@ const PDF = ({
               alignment: 'center',
               pageBreak: 'after'
             },
-
-
 
             // исходные данные 
             {
@@ -182,7 +133,6 @@ const PDF = ({
               },
               pageBreak: 'after',
             },
-
 
             // опорный план + затртаты (без оптимизации)
             {
@@ -213,7 +163,6 @@ const PDF = ({
               bold: true,
               pageBreak: 'after',
             },
-
 
             // оптимизированный план + затртаы (с оптимизаций)
             {
@@ -248,11 +197,7 @@ const PDF = ({
             {
               image: img_url,
               width: 780,
-              // pageBreak: 'before',
-
-              // height: 500,
             },
-
 
             // комментарии к  документу
             {
@@ -264,18 +209,15 @@ const PDF = ({
             },
             {
               text: `формат данного документы - ${pageSize}.
-        обратите внимание на это при печати`
+                 обратите внимание на это при печати`
             }
           ],
-
 
           footer: function (currentPage, pageCount) {
             return {
               text: [
                 { text: `${currentPage.toString()} из ${pageCount} страниц` },
-                //  { text: `спасибо за использование `}, 
               ],
-              // },
               alignment: 'right',
               margin: [0, 0, 50, 0]
             }
@@ -298,12 +240,6 @@ const PDF = ({
           pageOrientation: 'landscape', //'portrait'
           pageMargins: [50, 50, 50, 50],
 
-          // header: [
-          //   {
-          //     text: 'внимание'
-          //   },
-          // ],
-
           content: [
             // титульный лист
             {
@@ -325,8 +261,6 @@ const PDF = ({
               alignment: 'center',
               pageBreak: 'after'
             },
-
-
 
             // исходные данные 
             {
@@ -354,7 +288,6 @@ const PDF = ({
               },
               pageBreak: 'after',
             },
-
 
             // опорный план + затртаты (без оптимизации)
             {
@@ -386,7 +319,6 @@ const PDF = ({
               pageBreak: 'after',
             },
 
-
             // оптимизированный план + затртаы (с оптимизаций)
             {
               text: `Оптимизированный опорный план:`,
@@ -416,8 +348,6 @@ const PDF = ({
               bold: true,
             },
 
-
-
             // комментарии к  документу
             {
               text: `ВНИМАНИЕ!`,
@@ -431,7 +361,6 @@ const PDF = ({
         обратите внимание на это при печати`
             }
           ],
-
 
           footer: function (currentPage, pageCount) {
             return {
@@ -479,7 +408,6 @@ const PDF = ({
       const pageSize = colLength < 11 ? 'A4' : 'A3';
       pdfMake.createPdf(getDocumentContent(pageSize)).open()
     }
-
   }
 
   return (

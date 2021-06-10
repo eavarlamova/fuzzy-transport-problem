@@ -1,8 +1,14 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
-import { Button, Typography } from "@material-ui/core";
-import ResaltTable from '../ResaltTable';
+import React, {
+  memo,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import PDF from "../PDF";
+import { Button, Typography } from "@material-ui/core";
+
 import Graph from "../Graph";
+import ResaltTable from '../ResaltTable';
 
 const SteppingStoneCount = (props) => {
   const {
@@ -16,7 +22,6 @@ const SteppingStoneCount = (props) => {
   const [optimizedMatrixValue, setOptimizedMatrixValue]
     = useState({
       matrix: [],
-      // costs: null,
     });
 
   const [finish, setFinish] = useState(false)
@@ -39,32 +44,6 @@ const SteppingStoneCount = (props) => {
     tempMatrix,
     objOfCoordinat,
   ) => {
-    // objOfCoordinat : {
-    // OX1: (2) [0, 3]
-    // OY1: (2) [1, 4]
-    // finish: (2) [1, 3]
-    // original: (2) [0, 4]
-    // }
-
-    // или
-
-    // objOfCoordinat : {
-    // OX1: (2) [0, 3]
-    // OX2: (2) [1, 3]
-    // OX3: (2) [1, 5]
-    // OY1: (2) [2, 7]
-    // OY2: (2) [2, 5]
-    // OY3: (2) [1, 5]
-    // finish: (2) [1, 5]
-    // original: (2) [0, 7]
-    // }
-    // console.log('#######', optimizedMatrixValue.matrix, '#######')
-    // console.log('tempMatrix in getValueForOptimize', tempMatrix)
-
-    // пофиксить поиск ближней границы ! поиск идет некоррекнто
-    //   if(objOfCoordinat.original[0]===4 && objOfCoordinat.original[1]===3 ){
-    //     console.log('objOfCoordinat',objOfCoordinat )
-    //   }
     if (objOfCoordinat.original) {
 
       let setOfCoordinat = new Set();
@@ -74,28 +53,20 @@ const SteppingStoneCount = (props) => {
         let value = objOfCoordinat[key].toString();
         setOfCoordinat.add(value)
       }
-      // console.log('optimizedMatrixValue.matrix', optimizedMatrixValue.matrix)
       for (const coordinate of setOfCoordinat) {
         const [row, col] = coordinate.split(',')
-        // console.log('tempMatrix[row][col].x ', tempMatrix[row][col].x )
-
-        // !!! ТуТ НЕ ДОЛЖНО ПОЛУЧАТЬСЯ МИНУС 1
-        // ПОСМОТеть КООРДИНАТЫ
         const mathSign =
           tempMatrix[row][col].x > optimizedMatrixValue.matrix[row][col].x
             ?
             +1
             :
             -1;
-
         newCostsOneIteration = newCostsOneIteration +
           mathSign * matrix[row][col].c
       }
-
       return ({
         setOfCoordinat,
         tempMatrix,
-        // objOfCoordinat,
       });
     }
   }
@@ -151,13 +122,10 @@ const SteppingStoneCount = (props) => {
     const nextCoordinatName = `O${key}${numberOfCount + 1}`;
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
-    // надо найти столбец 
-    // const colStart = objOfCoordinat['OX1'][1]
-    // leftCol ->  
+
     const colEnd = objOfCoordinat['OX1'][1]
     const colStart = objOfCoordinat['OY1'][1]
     for (let leftCol = colStart; leftCol < colEnd; leftCol++) {
-      // for (let leftCol = 0; leftCol < col; leftCol++) {
       if (matrix[row][leftCol].x) {
         if (mathSigh === '+') {
           tempMatrix[row][leftCol].x++;
@@ -221,13 +189,9 @@ const SteppingStoneCount = (props) => {
     const nextCoordinatName = `O${key}${numberOfCount + 1}`;
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
-    const rowLength = tempMatrix.length;
-    // bottomRowStart = y1[0]
-    const bottomRowStart = objOfCoordinat['OY1'][0]
     const rowStart = objOfCoordinat['OX1'][0]
     const endRow = objOfCoordinat['OY1'][0]
     for (let bottomRow = rowStart; bottomRow > endRow; bottomRow--) {
-      // for (let bottomRow = rowLength - 1; bottomRow > row; bottomRow--) {
       if (matrix[bottomRow][col].x) {
         if (mathSign === '+') {
           tempMatrix[bottomRow][col].x++;
@@ -286,12 +250,9 @@ const SteppingStoneCount = (props) => {
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
     const colLength = tempMatrix[0].length;
-    // colEnd =
     const colEnd = objOfCoordinat['OY1'][1]
-    // colStatrt =
     const colStatrt = objOfCoordinat['OX1'][1]
     for (let rigthCol = colStatrt; rigthCol > colEnd; rigthCol--) {
-      // for (let rigthCol = colLength - 1; rigthCol > col; rigthCol--) {
       if (matrix[row][rigthCol].x) {
         if (mathSign === '-') {
           tempMatrix[row][rigthCol].x--;
@@ -325,11 +286,8 @@ const SteppingStoneCount = (props) => {
     const nextCoordinatName = `O${key}${numberOfCount + 1}`;
     const currentCellCoordinate = objOfCoordinat[currentCoordinatName]
     const [row, col] = currentCellCoordinate;
-    // console.log('currentCellCoordinate', currentCellCoordinate)
     const matrix = optimizedMatrixValue.matrix
     for (let topRow = row - 1; topRow >= 0; topRow--) {
-      // for (let topRow = row - 1; topRow >= 0; topRow--) {
-      // console.log('topRow', topRow)
       if (matrix[topRow][col].x) {
         tempMatrix[topRow][col].x--;
         objOfCoordinat[nextCoordinatName] = [topRow, col];
@@ -356,7 +314,6 @@ const SteppingStoneCount = (props) => {
 
     const startRow = objOfCoordinat['OY1'][0]
     for (let topRow = startRow; topRow < row; topRow++) {
-      // for (let topRow = 0; topRow < row; topRow++) {
 
       if (matrix[topRow][col].x) {
         if (mathSigh === '-') {
@@ -621,9 +578,11 @@ const SteppingStoneCount = (props) => {
       ), 0)
     }, 0)
   );
+
   const getFullCostsForFuzzyData = (matrix = optimizedMatrixValue.matrix) => (
     `(${getTotalCostsByCKey(matrix, 'cMin')},${getTotalCostsByCKey(matrix)},${getTotalCostsByCKey(matrix, 'cMax')})`
   )
+
   const getTotalCosts = (basePlan) => {
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
@@ -636,14 +595,6 @@ const SteppingStoneCount = (props) => {
         max: maxTotalCosts,
       })
       return deviation;
-      // return {
-      //   costs: deviation,
-      //   fullCosts: `(
-      //     ${minTotalCosts},
-      //     ${totalCosts},
-      //     ${maxTotalCosts},
-      //   )`
-      // };
     }
     return getTotalCostsByCKey(basePlan)
   };
@@ -661,7 +612,6 @@ const SteppingStoneCount = (props) => {
     tempMatrix) => {
     let minValues = [];
     const matrix = optimizedMatrixValue.matrix
-    // console.log('matrix in getMinValueFromMinusOne', matrix)
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
       if (tempMatrix[row][col].x < matrix[row][col].x) {
@@ -697,17 +647,11 @@ const SteppingStoneCount = (props) => {
     prevData,
   ) => {
     const optimizedMatrix = getDeepClone()
-    // console.log('#######', tempMatrix, '#######')
     const minValueX = getMinValueFromMinusOne(setOfCoordinat, tempMatrix)
     const matrix = optimizedMatrixValue.matrix
-    // console.log('matrix', matrix)
-    // console.log('optimizedMatrixValue.matrix',optimizedMatrixValue.matrix )
-    // console.log('tempMatrix in MIN-VAL', tempMatrix)
-    // console.log('matrix in CHANGE', matrix)
+
     for (const coordinate of setOfCoordinat) {
       const [row, col] = coordinate.split(',')
-      // console.log('tempMatrix[row][col].x', tempMatrix[row][col].x)
-      // // console.log('matrix[row][col].x', matrix[row][col].x)
       if (tempMatrix[row][col].x < matrix[row][col].x) {
         // то надо отнять мин число
         const currentX = optimizedMatrix[row][col].x;
@@ -723,9 +667,7 @@ const SteppingStoneCount = (props) => {
     return prevData
   };
 
-  const kek = function makeDeepOptimize(event, currrentData = optimizedMatrixValue, someNewData = {}) {
-    // const colCount = matrix[0].length;
-    // let prevData = { ...optimizedMatrixValue }
+  const optimizeCurrentMatrix = function makeDeepOptimize(event, currrentData = optimizedMatrixValue, someNewData = {}) {
     setFinish(false)
 
     let prevData = getDeepClone(currrentData);
@@ -827,36 +769,25 @@ const SteppingStoneCount = (props) => {
           }
         }
         catch (err) {
-          // console.log('err', err)
           console.log('#######', 'COL ERROR', '#######')
           continue;
 
         }
-        // console.log('prevData.costs', prevData.costs)
-        // console.log('someNewData.costs', someNewData.costs)
         if (prevData.costs !== someNewData.costs) {
           setOptimizedMatrixValue(prevData)
-          // setFinish(true)
-          // makeDeepOptimize(null, prevData)
-          // makeDeepOptimize()
-          // recursive
         }
       }
     }
     catch (err) {
-      console.error('#######', 'ERROR IN KEK', '#######')
+      console.error('#######', 'ERROR IN optimizeCurrentMatrix', '#######')
     }
-
-// if()
-// setFinish(true)
     setMakeOptimize(true)
     setStep(3)
   };
 
   useEffect(() => {
     if (finish) {
-      // console.log('#######', 'use effect TRUE', '#######')
-      kek()
+      optimizeCurrentMatrix()
     }
   }, [finish])
 
@@ -866,7 +797,7 @@ const SteppingStoneCount = (props) => {
     <>
       <Button
         fullWidth
-        onClick={kek}
+        onClick={optimizeCurrentMatrix}
       >
         Оптимизировать затраты - {optimizedMatrixValue.costs}
       </Button>
@@ -876,18 +807,18 @@ const SteppingStoneCount = (props) => {
           (
             <>
               <Typography>
-                Самый оптимальный вариант c затратами в {getFullCostsForFuzzyData()} и величиной отклонения  {optimizedMatrixValue.costs} 
+                Самый оптимальный вариант c затратами в {getFullCostsForFuzzyData()} и величиной отклонения  {optimizedMatrixValue.costs}
               </Typography>
               <ResaltTable
                 points={points}
                 matrix={optimizedMatrixValue.matrix}
                 name='значение'
               />
-              {fuzzyDataControl? 
-              <Graph value={getFullCostsForFuzzyData()} />
-            :
-            ''  
-            }
+              {fuzzyDataControl ?
+                <Graph value={getFullCostsForFuzzyData()} />
+                :
+                ''
+              }
 
               <PDF
                 matrix={matrix}

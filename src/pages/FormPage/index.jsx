@@ -1,34 +1,22 @@
-import { Button, Card, Grid, Input, Typography, FormControlLabel, Switch } from '@material-ui/core';
-import React, { memo, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { memo, useState, useMemo, useEffect } from 'react';
+import { Button, Grid, FormControlLabel, Switch } from '@material-ui/core';
+
 import AddingForm from "./components/AddingForm";
 import ResaltTable from "./components/ResaltTable";
+import StepperProgress from './components/StepperProgress';
 import SteppingStoneCount from "./components/SteppingStoneCount";
 import { setDataToLS, getDataFromLS } from '../../helpers/localStorage';
 import './index.scss';
-import PDF from './components/PDF';
 
-import StepperProgress from './components/StepperProgress';
 
 const FormPage = () => {
   const [points, setPoints] = useState({ departure: [], destination: [] }); // пункты отправления и назначения в виде объектов с полямя name и quality
   const [currentPoint, setCurrentPoint] = useState({ departure: {}, destination: {} });
   const [matrix, setMatrix] = useState([])
-  // const [basePlan, setBasePlan] = useState([]);
   const [fuzzyDataControl, setFuzzyDataControl] = useState(false)
   const [makeBasePlan, setMakeBasePlan] = useState(false);
   const [step, setStep] = useState(0);
-  // const matrix1 = [
-  //   [{ x: 11, c: 11, cMin: 0, cMax:10, }, { x: 12, c: 12 }],
-  //   [{ x: 21, c: 21 }, { x: 22, c: 22 }],
-  //   [{ x: 31, c: 31 }, { x: 50, c: null }],
-  // ];
-  // useEffect(() => {
-  //   setMatrix(matrix1)
-  //   setPoints({
-  //     departure: [{ name: 'ПО 1' }, { name: 'ПО 2' }, { name: 'ПО 3' }],
-  //     destination: [{ name: 'ПH 1' }, { name: 'ПH 2' }, { name: 'ПH 3' }]
-  //   })
-  // }, [])
+
   const getDeviationsForFuzzyData = ({ min, normal, max }) => ((2 * Number(normal) + Number(min) + Number(max)) / 2);
 
   const getCorrectNumberValue = (matrixArray, indexRow, indexCol, key) => (
@@ -151,6 +139,7 @@ const FormPage = () => {
       ), 0)
     }, 0)
   );
+
   const getTotalCosts = (basePlan) => {
     if (fuzzyDataControl) {
       const minTotalCosts = getTotalCostsByCKey(basePlan, 'cMin')
@@ -195,30 +184,27 @@ const FormPage = () => {
       newMatrix = matrix.map((item, index) => (
         item.filter((item, index) => index !== indexForDelete)
       ))
-
     }
-
     setMatrix(newMatrix)
     setPoints(newPoints);
   };
+
   const setFuzzyInput = () => {
     setFuzzyDataControl(!fuzzyDataControl)
-    setMakeBasePlan(false )
+    setMakeBasePlan(false)
   }
 
-  const totalBaseCost = useMemo(() => {
-    return (
-      getTotalCosts(matrix)
-    )
-  }, [matrix])
+  const totalBaseCost = useMemo(() => (
+    getTotalCosts(matrix)
+  ), [matrix]);
 
-  const totalDeviation = useMemo(()=>{
-    if(fuzzyDataControl){
+  const totalDeviation = useMemo(() => {
+    if (fuzzyDataControl) {
 
       const lengthOfTotalBasePlan = totalBaseCost.length
-      const arrayOfNumber = totalBaseCost.substring(1,lengthOfTotalBasePlan-1).split(', ');
-      
-      const result =getDeviationsForFuzzyData({
+      const arrayOfNumber = totalBaseCost.substring(1, lengthOfTotalBasePlan - 1).split(', ');
+
+      const result = getDeviationsForFuzzyData({
         min: (arrayOfNumber[0]),
         normal: arrayOfNumber[1],
         max: arrayOfNumber[2]
@@ -238,9 +224,6 @@ const FormPage = () => {
         className="form__add"
         justify='space-around'
       >
-
-
-
         <AddingForm
           name='ПУНКТ ОТПРАВЛЕНИЯ'
           type='departure'
@@ -256,7 +239,6 @@ const FormPage = () => {
           currentPoint={currentPoint.destination}
         />
         <Grid item xs={12}>
-
           <FormControlLabel
             control={<Switch checked={fuzzyDataControl} onChange={setFuzzyInput} />}
             label="нечеткие данные"
@@ -283,14 +265,14 @@ const FormPage = () => {
                       onClick={countBasePlan}
                     >
                       посчитать опорный план
-            </Button>
+                    </Button>
                     :
                     <Button
                       fullWidth
                       disabled
                     >
                       посчитать опорный план
-            </Button>
+                    </Button>
                   }
                 </>
               )
@@ -304,25 +286,24 @@ const FormPage = () => {
               (
                 <>
                   ОПОРНЫЙ ПЛАН
-          <ResaltTable
+                  <ResaltTable
                     points={points}
                     matrix={matrix}
                     name='значение'
                   />
-          ОБЩИЕ ЗАТРТАТЫ - {totalBaseCost} 
-          <br/>
-          {fuzzyDataControl 
-          ?
-          `ВЕЛИЧИНА ОТКЛОНЕНИЯ -  ${totalDeviation}`
-        :
-        ''
-        }
+                  ОБЩИЕ ЗАТРТАТЫ - {totalBaseCost}
+                  <br />
+                  {fuzzyDataControl
+                    ?
+                    `ВЕЛИЧИНА ОТКЛОНЕНИЯ -  ${totalDeviation}`
+                    :
+                    ''
+                  }
                   <SteppingStoneCount
                     matrix={matrix}
                     points={points}
                     fuzzyDataControl={fuzzyDataControl}
                     firstTotalCosts={totalBaseCost}
-
                     setStep={setStep}
                   />
                 </>
@@ -330,11 +311,6 @@ const FormPage = () => {
               :
               ''
           }
-
-
-
-
-
         </Grid>
       </Grid>
     </div>
