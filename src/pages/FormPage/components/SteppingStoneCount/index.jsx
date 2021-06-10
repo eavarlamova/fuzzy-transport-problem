@@ -834,11 +834,6 @@ const SteppingStoneCount = (props) => {
           :
           ''
       }
-
-      {/* 
-        :
-        ''
-      } */}
     </>
   )
 };
